@@ -1,5 +1,6 @@
 package com.example.einkaufsliste.ui.screens
 
+import android.content.res.Resources.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,14 +20,20 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,8 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.einkaufsliste.viewmodel.ListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.einkaufsliste.viewmodel.ListViewModelState
@@ -54,36 +63,68 @@ fun StartScreen(viewModel: ListViewModel = viewModel()) {
         containerColor = Color.LightGray
     ) { paddingValues ->
         if (state.showAddListSheet) {
-            ModalBottomSheet(
+            Dialog(
                 onDismissRequest = { viewModel.changeAddListSheetState(false) },
             ) {
-                Box(
-                    contentAlignment = Alignment.TopCenter,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.75f)
                         .background(Color.LightGray)
                 ) {
-                    TextField(
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Blue)
+                            .padding(20.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Einkaufsliste hinzufügen",
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                    }
+                    OutlinedTextField(
                         value = state.addListFieldText,
                         onValueChange = { viewModel.updateAddListText(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = "Einkaufsliste hinzufügen") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        placeholder = { Text(text = "Name") },
                         singleLine = true,
+                        label = { Text(text = "Name der Liste") },
                         leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { viewModel.updateAddListText("") })
+                            if (state.addListFieldText != "") {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable { viewModel.updateAddListText("") })
+                            }
                         },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { viewModel.addShoppingList(name = state.addListFieldText) }
-                            )
-                        }
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.LightGray,
+                            unfocusedContainerColor = Color.White,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor = Color.Gray,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            focusedLeadingIconColor = Color.Black,
+                            unfocusedLeadingIconColor = Color.Black,
+                        )
                     )
+                    Spacer(modifier = Modifier.fillMaxWidth(1f))
+                    Button(
+                        onClick = { viewModel.addShoppingList(state.addListFieldText) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                    ) {
+                        Text(text = "Erstellen", color = Color.White)
+                    }
                 }
             }
         }
