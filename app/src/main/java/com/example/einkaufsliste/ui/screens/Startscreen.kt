@@ -63,70 +63,7 @@ fun StartScreen(viewModel: ListViewModel = viewModel()) {
         containerColor = Color.LightGray
     ) { paddingValues ->
         if (state.showAddListSheet) {
-            Dialog(
-                onDismissRequest = { viewModel.changeAddListSheetState(false) },
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.75f)
-                        .background(Color.LightGray)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Blue)
-                            .padding(20.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Einkaufsliste hinzufügen",
-                            textAlign = TextAlign.Center,
-                            fontSize = 20.sp,
-                            color = Color.White
-                        )
-                    }
-                    OutlinedTextField(
-                        value = state.addListFieldText,
-                        onValueChange = { viewModel.updateAddListText(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        placeholder = { Text(text = "Name") },
-                        singleLine = true,
-                        label = { Text(text = "Name der Liste") },
-                        leadingIcon = {
-                            if (state.addListFieldText != "") {
-                                Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = null,
-                                    modifier = Modifier.clickable { viewModel.updateAddListText("") })
-                            }
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.LightGray,
-                            unfocusedContainerColor = Color.White,
-                            focusedLabelColor = Color.Black,
-                            unfocusedLabelColor = Color.Gray,
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black,
-                            focusedLeadingIconColor = Color.Black,
-                            unfocusedLeadingIconColor = Color.Black,
-                        )
-                    )
-                    Spacer(modifier = Modifier.fillMaxWidth(1f))
-                    Button(
-                        onClick = { viewModel.addShoppingList(state.addListFieldText) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-                    ) {
-                        Text(text = "Erstellen", color = Color.White)
-                    }
-                }
-            }
+            AddListDialog(viewModel, state)
         }
 
         LazyColumn(
@@ -134,6 +71,79 @@ fun StartScreen(viewModel: ListViewModel = viewModel()) {
         ) {
             this.items(state.allLists) { list ->
                 ListListItem(shoppingList = list)
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddListDialog(
+    viewModel: ListViewModel,
+    state: ListViewModelState
+) {
+    Dialog(
+        onDismissRequest = { viewModel.changeAddListSheetState(false) },
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.75f)
+                .background(Color.LightGray)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Blue)
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Einkaufsliste hinzufügen",
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+            OutlinedTextField(
+                value = state.addListFieldText,
+                onValueChange = { viewModel.updateAddListText(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                placeholder = { Text(text = "Name") },
+                singleLine = true,
+                label = { Text(text = "Name der Liste") },
+                leadingIcon = {
+                    if (state.addListFieldText != "") {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.clickable { viewModel.updateAddListText("") })
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.LightGray,
+                    unfocusedContainerColor = Color.White,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Gray,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedLeadingIconColor = Color.Black,
+                    unfocusedLeadingIconColor = Color.Black,
+                    focusedPlaceholderColor = Color.DarkGray,
+                    unfocusedPlaceholderColor = Color.DarkGray
+                )
+            )
+            Spacer(modifier = Modifier.fillMaxWidth(1f))
+            Button(
+                onClick = { viewModel.addShoppingList(state.addListFieldText) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(text = "Erstellen", color = Color.White)
             }
         }
     }
