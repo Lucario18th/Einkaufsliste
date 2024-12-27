@@ -165,7 +165,7 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
                 .background(color = Color.Blue)
                 .padding(top = 50.dp, bottom = 20.dp, start = 30.dp, end = 30.dp)
         ) {
-            Icon(imageVector = Icons.Filled.ShoppingCart, contentDescription = null)
+            Icon(imageVector = Icons.Filled.ShoppingCart, contentDescription = null, tint = Color.White)
 
             Spacer(
                 modifier = Modifier
@@ -173,7 +173,7 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
                     .weight(1f)
             )
 
-            Text(text = "Einkaufslisten", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(text = "Einkaufslisten", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.White)
 
             Spacer(
                 modifier = Modifier
@@ -184,7 +184,8 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
             Icon(
                 imageVector = Icons.Filled.Search,
                 contentDescription = null,
-                modifier = Modifier.clickable { viewModel.changeSearchbarState(true) }
+                modifier = Modifier.clickable { viewModel.changeSearchbarState(true) },
+                tint = Color.White
             )
         }
         if (state.searchFieldOpen) {
