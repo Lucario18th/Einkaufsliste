@@ -40,14 +40,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.einkaufsliste.viewmodel.ListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.einkaufsliste.viewmodel.ListViewModelState
+import com.example.einkaufsliste.viewmodel.ListsOverviewViewModel
+import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
 import com.example.einkaufsliste.viewmodel.ShoppingList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListsOverviewScreen(viewModel: ListViewModel = viewModel()) {
+fun ListsOverviewScreen(viewModel: ListsOverviewViewModel = viewModel()) {
     val state by viewModel.listViewState.collectAsState()
     Scaffold(
         topBar = { TopBar(state, viewModel) },
@@ -73,8 +73,8 @@ fun ListsOverviewScreen(viewModel: ListViewModel = viewModel()) {
 
 @Composable
 private fun AddListDialog(
-    viewModel: ListViewModel,
-    state: ListViewModelState
+    viewModel: ListsOverviewViewModel,
+    state: ListsOverviewViewModelState
 ) {
     Dialog(
         onDismissRequest = { viewModel.changeAddListDialogState(false) },
@@ -157,7 +157,7 @@ private fun AddButton(onClick:() -> Unit) {
 }
 
 @Composable
-private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
+private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewViewModel) {
     Column {
         Row(
             modifier = Modifier

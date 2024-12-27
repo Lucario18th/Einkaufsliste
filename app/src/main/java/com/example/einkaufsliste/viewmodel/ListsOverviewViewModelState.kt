@@ -1,6 +1,6 @@
 package com.example.einkaufsliste.viewmodel
 
-data class ListViewModelState(
+data class ListsOverviewViewModelState(
     val allLists: List<ShoppingList> = emptyList(),
     val openedList: ListItem? = null,
     val searchFieldOpen: Boolean = false,
