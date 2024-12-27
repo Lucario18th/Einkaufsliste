@@ -1,6 +1,5 @@
 package com.example.einkaufsliste.ui.screens
 
-import android.content.res.Resources.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,23 +15,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -57,7 +52,7 @@ fun StartScreen(viewModel: ListViewModel = viewModel()) {
     Scaffold(
         topBar = { TopBar(state, viewModel) },
         floatingActionButton = {
-            AddButton(onClick = { viewModel.changeAddListSheetState(true) })
+            AddButton(onClick = { viewModel.changeAddListDialogState(true) })
         },
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.LightGray
@@ -82,7 +77,7 @@ private fun AddListDialog(
     state: ListViewModelState
 ) {
     Dialog(
-        onDismissRequest = { viewModel.changeAddListSheetState(false) },
+        onDismissRequest = { viewModel.changeAddListDialogState(false) },
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,7 +101,7 @@ private fun AddListDialog(
                 )
             }
             OutlinedTextField(
-                value = state.addListFieldText,
+                value = state.addListTextField,
                 onValueChange = { viewModel.updateAddListText(it) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,7 +110,7 @@ private fun AddListDialog(
                 singleLine = true,
                 label = { Text(text = "Name der Liste") },
                 leadingIcon = {
-                    if (state.addListFieldText != "") {
+                    if (state.addListTextField != "") {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = null,
@@ -137,7 +132,7 @@ private fun AddListDialog(
             )
             Spacer(modifier = Modifier.fillMaxWidth(1f))
             Button(
-                onClick = { viewModel.addShoppingList(state.addListFieldText) },
+                onClick = { viewModel.addShoppingList(state.addListTextField) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
@@ -194,7 +189,7 @@ private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
         }
         if (state.searchFieldOpen) {
             TextField(
-                value = state.searchFieldText,
+                value = state.searchTextField,
                 onValueChange = { viewModel.updateSearchListText(it) },
                 leadingIcon = {
                     Icon(
@@ -221,12 +216,11 @@ private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
 
 @Composable
 private fun ListListItem(shoppingList: ShoppingList) {
-    Column {
+    Column(modifier = Modifier.background(Color.White)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
-                .background(color = Color.White)
         ) {
             Text(text = shoppingList.name)
             Spacer(

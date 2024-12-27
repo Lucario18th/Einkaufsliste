@@ -4,9 +4,10 @@ data class ListViewModelState(
     val allLists: List<ShoppingList> = emptyList(),
     val openedList: ListItem? = null,
     val searchFieldOpen: Boolean = false,
-    val searchFieldText: String = "",
+    val searchTextField: String = "",
     val showAddListSheet: Boolean = false,
-    val addListFieldText: String = ""
+    val addListTextField: String = "",
+    val addListTextFieldHasError: Boolean = false,
 )
 
 data class ShoppingList(
