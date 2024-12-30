@@ -3,7 +3,7 @@ package com.example.lists.domain.models
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class ShoppingItem() : RealmObject {
+class RealmShoppingItem() : RealmObject {
     @PrimaryKey
     val id: Int = 0
     val name: String = ""

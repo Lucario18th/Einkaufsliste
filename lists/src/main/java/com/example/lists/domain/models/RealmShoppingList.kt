@@ -4,8 +4,8 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class ShoppingList() : RealmObject {
+class RealmShoppingList() : RealmObject {
     @PrimaryKey
     var id: Int = 0
-    var items: RealmList<ShoppingItem> = emptyList<ShoppingItem>().toRealmList()
+    var items: RealmList<RealmShoppingItem> = emptyList<RealmShoppingItem>().toRealmList()
 }
