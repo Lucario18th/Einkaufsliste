@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.io.realm.kotlin)
 }
 
 android {
@@ -34,11 +33,10 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.libary.base)
-    implementation(libs.libary.sync)
+    implementation("io.realm.kotlin:library-base:1.16.0")
+    implementation("io.realm.kotlin:library-sync:1.16.0")
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
