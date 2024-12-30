@@ -1,5 +1,7 @@
-package com.example.lists
+package com.example.lists.domain
 
+import com.example.lists.domain.models.ShoppingItem
+import com.example.lists.domain.models.ShoppingList
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 

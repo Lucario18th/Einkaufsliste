@@ -1,4 +1,4 @@
-package com.example.lists
+package com.example.lists.domain.models
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
