@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class ListsOverviewViewModel: ViewModel() {
+class ListsOverviewViewModel(
+): ViewModel() {
     private val listStateFlow = MutableStateFlow(ListsOverviewViewModelState())
     val listViewState = listStateFlow.asStateFlow()
 

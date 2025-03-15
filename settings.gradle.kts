@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Einkaufsliste"
 include(":app")
-include(":lists")
