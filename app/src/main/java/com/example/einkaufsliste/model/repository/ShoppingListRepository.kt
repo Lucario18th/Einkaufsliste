@@ -1,9 +1,9 @@
-package com.example.lists.domain.repository
+package com.example.einkaufsliste.model.repository
 
-import com.example.lists.domain.models.ShoppingList
-import com.example.lists.domain.models.toRealmObject
-import com.example.lists.domain.realm.RealmShoppingItem
-import com.example.lists.domain.realm.RealmShoppingList
+import com.example.einkaufsliste.model.models.ShoppingList
+import com.example.einkaufsliste.model.models.toRealmObject
+import com.example.einkaufsliste.model.realm.RealmShoppingItem
+import com.example.einkaufsliste.model.realm.RealmShoppingList
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 

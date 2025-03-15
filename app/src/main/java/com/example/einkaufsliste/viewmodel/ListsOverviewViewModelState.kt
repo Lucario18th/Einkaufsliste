@@ -1,5 +1,7 @@
 package com.example.einkaufsliste.viewmodel
 
+import com.example.einkaufsliste.model.models.ShoppingList
+
 data class ListsOverviewViewModelState(
     val allLists: List<ShoppingList> = emptyList(),
     val openedList: ListItem? = null,
@@ -8,12 +10,6 @@ data class ListsOverviewViewModelState(
     val showAddListSheet: Boolean = false,
     val addListTextField: String = "",
     val addListTextFieldHasError: Boolean = false,
-)
-
-data class ShoppingList(
-    val shoppingList: List<ListItem> = emptyList(),
-    val name: String,
-    val completion: Int = 0,
 )
 
 data class ListItem (

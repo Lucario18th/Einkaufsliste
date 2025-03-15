@@ -1,11 +1,12 @@
-package com.example.lists.domain.usecase
+package com.example.einkaufsliste.model.usecase
 
-import com.example.lists.domain.repository.ShoppingListRepository
+import com.example.einkaufsliste.model.models.ShoppingList
+import com.example.einkaufsliste.model.repository.ShoppingListRepository
 
 class CreateShoppingListUsecase(
-    val repository: ShoppingListRepository = ShoppingListRepository()
+    private val repository: ShoppingListRepository = ShoppingListRepository()
 ) {
-    fun invoke() {
-
+    suspend operator fun invoke(shoppingList: ShoppingList) {
+        repository.createShoppingList(shoppingList)
     }
 }

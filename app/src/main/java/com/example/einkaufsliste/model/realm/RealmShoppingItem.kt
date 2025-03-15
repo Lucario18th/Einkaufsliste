@@ -1,4 +1,4 @@
-package com.example.lists.domain.realm
+package com.example.einkaufsliste.model.realm
 
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey

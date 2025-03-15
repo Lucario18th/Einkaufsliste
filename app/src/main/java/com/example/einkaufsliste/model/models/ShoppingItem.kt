@@ -1,6 +1,6 @@
-package com.example.lists.domain.models
+package com.example.einkaufsliste.model.models
 
-import com.example.lists.domain.realm.RealmShoppingItem
+import com.example.einkaufsliste.model.realm.RealmShoppingItem
 
 data class ShoppingItem(
     val id: Int,

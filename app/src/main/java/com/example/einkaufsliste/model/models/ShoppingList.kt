@@ -1,21 +1,22 @@
-package com.example.lists.domain.models
+package com.example.einkaufsliste.model.models
 
-import com.example.lists.domain.realm.RealmShoppingItem
-import com.example.lists.domain.realm.RealmShoppingList
+import com.example.einkaufsliste.model.realm.RealmShoppingItem
+import com.example.einkaufsliste.model.realm.RealmShoppingList
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmList
 
 data class ShoppingList(
     val id: Int,
+    val name: String,
     val items: List<ShoppingItem> = emptyList()
 )
 
 fun ShoppingList.toRealmObject(): RealmShoppingList {
-    return RealmShoppingList(id, items.toRealmShoppingItemList())
+    return RealmShoppingList(id, name,  items.toRealmShoppingItemList())
 }
 
 fun RealmShoppingList.toDomain(): ShoppingList {
-    return ShoppingList(id, items.toDomainShoppingItemList())
+    return ShoppingList(id, name,  items.toDomainShoppingItemList())
 }
 
 private fun List<ShoppingItem>.toRealmShoppingItemList():RealmList<RealmShoppingItem> {
