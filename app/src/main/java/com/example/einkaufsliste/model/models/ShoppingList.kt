@@ -2,6 +2,7 @@ package com.example.einkaufsliste.model.models
 
 import com.example.einkaufsliste.model.realm.RealmShoppingItem
 import com.example.einkaufsliste.model.realm.RealmShoppingList
+import com.example.einkaufsliste.viewmodel.Amount
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmList
 
@@ -19,12 +20,29 @@ fun RealmShoppingList.toDomain(): ShoppingList {
     return ShoppingList(id, name,  items.toDomainShoppingItemList())
 }
 
-fun ShoppingList.completion(): Int {
+fun ShoppingList.completionRate(): Float {
     var itemCount = 0
     items.forEach {
-        it.checked?: itemCount++
+        if (it.checked) itemCount++
     }
+    if (itemCount == 0 || items.isEmpty()) return 0f
+
+    return items.size / itemCount.toFloat()
+}
+
+fun ShoppingList.completion(): Int {
+    var itemCount = 0
+    items.forEach { if (it.checked) itemCount++ }
     return itemCount
+}
+
+fun getTestList(): ShoppingList {
+    val list = mutableListOf<ShoppingItem>()
+    list.add(ShoppingItem(1, "test", Amount.KG.text, 1, true))
+    list.add(ShoppingItem(2, "test1", Amount.LITRES.text, 1, true))
+    list.add(ShoppingItem(3, "test2", Amount.ML.text, 1, true))
+    list.add(ShoppingItem(4, "test3", Amount.PACKAGES.text, 1, false))
+    return ShoppingList(1, "testlist", list)
 }
 
 private fun List<ShoppingItem>.toRealmShoppingItemList():RealmList<RealmShoppingItem> {

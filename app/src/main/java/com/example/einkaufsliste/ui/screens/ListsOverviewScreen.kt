@@ -1,6 +1,7 @@
 package com.example.einkaufsliste.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -22,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -34,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +58,7 @@ fun ListsOverviewScreen(viewModel: ListsOverviewViewModel = viewModel()) {
             AddButton(onClick = { viewModel.changeAddListDialogState(true) })
         },
         modifier = Modifier.fillMaxSize(),
-        containerColor = Color.LightGray
+        containerColor = Color.White
     ) { paddingValues ->
         if (state.showAddListSheet) {
             AddListDialog(viewModel, state)
@@ -146,7 +148,7 @@ private fun AddListDialog(
 }
 
 @Composable
-private fun AddButton(onClick:() -> Unit) {
+private fun AddButton(onClick: () -> Unit) {
     FloatingActionButton(
         onClick = { onClick() },
         containerColor = Color.Blue,
@@ -166,7 +168,11 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
                 .background(color = Color.Blue)
                 .padding(top = 50.dp, bottom = 20.dp, start = 30.dp, end = 30.dp)
         ) {
-            Icon(imageVector = Icons.Filled.ShoppingCart, contentDescription = null, tint = Color.White)
+            Icon(
+                imageVector = Icons.Filled.ShoppingCart,
+                contentDescription = null,
+                tint = Color.White
+            )
 
             Spacer(
                 modifier = Modifier
@@ -174,7 +180,12 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
                     .weight(1f)
             )
 
-            Text(text = "Einkaufslisten", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.White)
+            Text(
+                text = "Einkaufslisten",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.White
+            )
 
             Spacer(
                 modifier = Modifier
@@ -218,11 +229,17 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
 
 @Composable
 private fun ListListItem(shoppingList: ShoppingList) {
-    Column(modifier = Modifier.background(Color.White)) {
+    Box(
+        modifier = Modifier
+            .padding(vertical = 15.dp, horizontal = 20.dp)
+            .clip(RoundedCornerShape(20.dp))
+            //.background(Color.White)
+            .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(20.dp)
         ) {
             Text(text = shoppingList.name)
             Spacer(
@@ -232,9 +249,6 @@ private fun ListListItem(shoppingList: ShoppingList) {
             )
             Text(text = "${shoppingList.completion()}/${shoppingList.items.size}")
         }
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.Black
-        )
     }
+
 }
