@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.einkaufsliste.ui.screens.ListScreen
 import com.example.einkaufsliste.ui.screens.ListsOverviewScreen
 import com.example.einkaufsliste.ui.theme.EinkaufslisteTheme
 
@@ -36,6 +37,10 @@ private fun Navigation() {
     ) {
         composable(route = NavigationDestinations.ListsOverview.name) {
             ListsOverviewScreen()
+        }
+
+        composable(route = NavigationDestinations.List.name) {
+            ListScreen()
         }
     }
 }
