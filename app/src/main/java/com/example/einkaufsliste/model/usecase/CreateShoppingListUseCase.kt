@@ -7,7 +7,7 @@ import com.example.einkaufsliste.model.repository.ShoppingListRepository
 class CreateShoppingListUseCase(
     private val repository: ShoppingListRepository = ShoppingListRepository()
 ) {
-    suspend operator fun invoke(shoppingList: ShoppingList) {
+    operator fun invoke(shoppingList: ShoppingList) {
         repository.createShoppingList(shoppingList.toRealmObject())
     }
 }
