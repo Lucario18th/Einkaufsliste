@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.usecase.CreateShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.GetRandomKeyValueUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class ListsOverviewViewModel(): ViewModel() {
     val createShoppingList = CreateShoppingListUseCase()
+    val getRandomKeyValue = GetRandomKeyValueUseCase()
 
     private val listStateFlow = MutableStateFlow(ListsOverviewViewModelState())
     val listViewState = listStateFlow.asStateFlow()
@@ -21,7 +23,7 @@ class ListsOverviewViewModel(): ViewModel() {
         } else {
             val shoppingLists: MutableList<ShoppingList> =
                 listStateFlow.value.allLists.toMutableList()
-            val nextId = listViewState.value.allLists.size + 1
+            val nextId = getRandomKeyValue()
             val newShoppingList = ShoppingList(nextId, name)
             shoppingLists.add(newShoppingList)
             listStateFlow.update { it.copy(allLists = shoppingLists) }
