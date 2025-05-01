@@ -2,7 +2,6 @@ package com.example.einkaufsliste.model.models
 
 import com.example.einkaufsliste.model.realm.RealmShoppingItem
 import com.example.einkaufsliste.model.realm.RealmShoppingList
-import com.example.einkaufsliste.viewmodel.Amount
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmList
 
@@ -38,10 +37,10 @@ fun ShoppingList.completion(): Int {
 
 fun getTestList(): ShoppingList {
     val list = mutableListOf<ShoppingItem>()
-    list.add(ShoppingItem(1, "test", Amount.KG.text, 1, true))
-    list.add(ShoppingItem(2, "test1", Amount.LITRES.text, 1, true))
-    list.add(ShoppingItem(3, "test2", Amount.ML.text, 1, true))
-    list.add(ShoppingItem(4, "test3", Amount.PACKAGES.text, 1, false))
+    list.add(ShoppingItem(1, "test", Amount.KG, 1, true))
+    list.add(ShoppingItem(2, "test1", Amount.LITRES, 1, true))
+    list.add(ShoppingItem(3, "test2", Amount.ML, 1, true))
+    list.add(ShoppingItem(4, "test3", Amount.PACKAGES, 1, false))
     return ShoppingList(1, "testlist", list)
 }
 
