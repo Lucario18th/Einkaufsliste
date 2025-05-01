@@ -16,24 +16,24 @@ class ListsOverviewViewModel(): ViewModel() {
     val getRandomKeyValue = GetRandomKeyValueUseCase()
     private val getShoppingListUseCase = GetShoppingListUseCase()
 
-    private val listStateFlow = MutableStateFlow(ListsOverviewViewModelState())
-    val listViewState = listStateFlow.asStateFlow()
+    private val listOverviewStateFlow = MutableStateFlow(ListsOverviewViewModelState())
+    val listOverviewViewState = listOverviewStateFlow.asStateFlow()
 
     init {
         val allLists = getShoppingListUseCase.getAllShoppingLists()
-        listStateFlow.update { it.copy(allLists = allLists) }
+        listOverviewStateFlow.update { it.copy(allLists = allLists) }
     }
 
     fun addShoppingList(name: String) {
         if (name == "") {
-            listStateFlow.update { it.copy(addListTextFieldHasError = true) }
+            listOverviewStateFlow.update { it.copy(addListTextFieldHasError = true) }
         } else {
             val shoppingLists: MutableList<ShoppingList> =
-                listStateFlow.value.allLists.toMutableList()
+                listOverviewStateFlow.value.allLists.toMutableList()
             val nextId = getRandomKeyValue()
             val newShoppingList = ShoppingList(nextId, name)
             shoppingLists.add(newShoppingList)
-            listStateFlow.update { it.copy(allLists = shoppingLists, addListTextField = "") }
+            listOverviewStateFlow.update { it.copy(allLists = shoppingLists, addListTextField = "") }
             changeAddListDialogState(false)
             viewModelScope.launch {
                 createShoppingList(newShoppingList)
@@ -42,18 +42,18 @@ class ListsOverviewViewModel(): ViewModel() {
     }
 
     fun updateSearchListText(text: String) {
-        listStateFlow.update { it.copy(searchTextField = text) }
+        listOverviewStateFlow.update { it.copy(searchTextField = text) }
     }
 
     fun changeSearchbarState(state: Boolean) {
-        listStateFlow.update { it.copy(searchFieldOpen = state) }
+        listOverviewStateFlow.update { it.copy(searchFieldOpen = state) }
     }
 
     fun changeAddListDialogState(state: Boolean) {
-        listStateFlow.update { it.copy(showAddListSheet = state) }
+        listOverviewStateFlow.update { it.copy(showAddListSheet = state) }
     }
 
     fun updateAddListText(text: String) {
-        listStateFlow.update { it.copy(addListTextField = text) }
+        listOverviewStateFlow.update { it.copy(addListTextField = text) }
     }
 }

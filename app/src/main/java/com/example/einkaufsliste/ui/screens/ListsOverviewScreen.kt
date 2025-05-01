@@ -51,7 +51,7 @@ import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListsOverviewScreen(viewModel: ListsOverviewViewModel = viewModel()) {
-    val state by viewModel.listViewState.collectAsState()
+    val state by viewModel.listOverviewViewState.collectAsState()
     Scaffold(
         topBar = { TopBar(state, viewModel) },
         floatingActionButton = {
