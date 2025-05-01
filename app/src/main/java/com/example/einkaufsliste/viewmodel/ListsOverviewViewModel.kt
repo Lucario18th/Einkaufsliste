@@ -3,7 +3,6 @@ package com.example.einkaufsliste.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.einkaufsliste.model.models.ShoppingList
-import com.example.einkaufsliste.model.models.getTestList
 import com.example.einkaufsliste.model.usecase.CreateShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.GetRandomKeyValueUseCase
 import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
@@ -32,7 +31,7 @@ class ListsOverviewViewModel(): ViewModel() {
             val shoppingLists: MutableList<ShoppingList> =
                 listStateFlow.value.allLists.toMutableList()
             val nextId = getRandomKeyValue()
-            val newShoppingList = getTestList() //ShoppingList(nextId, name)
+            val newShoppingList = ShoppingList(nextId, name)
             shoppingLists.add(newShoppingList)
             listStateFlow.update { it.copy(allLists = shoppingLists, addListTextField = "") }
             changeAddListDialogState(false)
