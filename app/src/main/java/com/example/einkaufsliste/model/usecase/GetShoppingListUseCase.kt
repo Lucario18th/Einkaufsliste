@@ -3,10 +3,10 @@ package com.example.einkaufsliste.model.usecase
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.repository.ShoppingListRepository
 
-class CreateShoppingListUseCase(
+class GetShoppingListUseCase(
     private val repository: ShoppingListRepository = ShoppingListRepository()
 ) {
-    operator fun invoke(shoppingList: ShoppingList) {
-        repository.createShoppingList(shoppingList)
+    fun getAllShoppingLists(): List<ShoppingList> {
+        return repository.getAllShoppingLists()
     }
 }
