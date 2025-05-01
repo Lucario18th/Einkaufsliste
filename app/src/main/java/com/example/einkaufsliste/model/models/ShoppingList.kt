@@ -19,6 +19,14 @@ fun RealmShoppingList.toDomain(): ShoppingList {
     return ShoppingList(id, name,  items.toDomainShoppingItemList())
 }
 
+fun ShoppingList.completion(): Int {
+    var itemCount = 0
+    items.forEach {
+        it.checked?: itemCount++
+    }
+    return itemCount
+}
+
 private fun List<ShoppingItem>.toRealmShoppingItemList():RealmList<RealmShoppingItem> {
     val newList: MutableList<RealmShoppingItem> = mutableListOf()
     this.forEach { shoppingItem ->

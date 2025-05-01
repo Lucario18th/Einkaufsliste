@@ -41,9 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.einkaufsliste.model.models.ShoppingList
+import com.example.einkaufsliste.model.models.completion
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModel
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
-import com.example.einkaufsliste.viewmodel.ShoppingList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -229,7 +230,7 @@ private fun ListListItem(shoppingList: ShoppingList) {
                     .fillMaxWidth()
                     .weight(1f)
             )
-            Text(text = "${shoppingList.completion}/${shoppingList.shoppingList.size}")
+            Text(text = "${shoppingList.completion()}/${shoppingList.items.size}")
         }
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),

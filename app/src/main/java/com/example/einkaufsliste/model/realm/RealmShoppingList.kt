@@ -4,11 +4,18 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class RealmShoppingList(
+class RealmShoppingList() : RealmObject {
     @PrimaryKey
-    val id: Int = 0,
-    val name: String = "",
-    val items: RealmList<RealmShoppingItem> = emptyList<RealmShoppingItem>().toRealmList()
-) : RealmObject {
-
+    var id: Int = 0
+    var name: String = ""
+    var items: RealmList<RealmShoppingItem> = emptyList<RealmShoppingItem>().toRealmList()
+    constructor(
+        id: Int,
+        name: String,
+        items: RealmList<RealmShoppingItem> = emptyList<RealmShoppingItem>().toRealmList()
+    ) : this() {
+        this.id = id
+        this.name = name
+        this.items = items
+    }
 }
