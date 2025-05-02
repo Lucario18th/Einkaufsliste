@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class ListViewModel  (
     savedStateHandle: SavedStateHandle
@@ -16,4 +17,16 @@ class ListViewModel  (
 
     private val listStateFlow = MutableStateFlow(ListViewModelState(shoppingList))
     val listViewState = listStateFlow.asStateFlow()
+
+    fun updateSearchFieldState(isOpen: Boolean) {
+        listStateFlow.update {
+            it.copy(searchFieldOpen = isOpen)
+        }
+    }
+
+    fun updateSearchFieldText(text: String) {
+        listStateFlow.update {
+            it.copy(searchFieldText = text)
+        }
+    }
 }
