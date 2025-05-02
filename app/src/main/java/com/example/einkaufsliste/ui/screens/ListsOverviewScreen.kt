@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -82,14 +81,14 @@ private fun AddListDialog(
     state: ListsOverviewViewModelState
 ) {
     Dialog(
-        onDismissRequest = { viewModel.changeAddListDialogState(false) },
+        onDismissRequest = { viewModel.changeAddListDialogState(false) }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.75f)
-                .background(Color.LightGray)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
         ) {
             Box(
                 modifier = Modifier
@@ -110,11 +109,10 @@ private fun AddListDialog(
                 onValueChange = { viewModel.updateAddListText(it) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
+                    .padding(horizontal = 10.dp, vertical = 20.dp),
                 placeholder = { Text(text = "Name") },
                 singleLine = true,
-                label = { Text(text = "Name der Liste") },
-                leadingIcon = {
+                trailingIcon = {
                     if (state.addListTextField != "") {
                         Icon(
                             imageVector = Icons.Filled.Close,
@@ -123,27 +121,29 @@ private fun AddListDialog(
                     }
                 },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.LightGray,
+                    focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.Gray,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
-                    focusedLeadingIconColor = Color.Black,
-                    unfocusedLeadingIconColor = Color.Black,
-                    focusedPlaceholderColor = Color.DarkGray,
-                    unfocusedPlaceholderColor = Color.DarkGray
+                    focusedTrailingIconColor = Color.Black,
+                    unfocusedTrailingIconColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray,
+                    focusedIndicatorColor = Color.Blue,
+                    unfocusedIndicatorColor = Color.Blue,
+
                 )
             )
-            Spacer(modifier = Modifier.fillMaxWidth(1f))
-            Button(
-                onClick = { viewModel.addShoppingList(state.addListTextField) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-            ) {
-                Text(text = "Erstellen", color = Color.White)
+            Row {
+                Button(
+                    onClick = { viewModel.addShoppingList(state.addListTextField) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                ) {
+                    Text(text = "Erstellen", color = Color.White)
+                }
             }
         }
     }
@@ -223,7 +223,18 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                shape = RoundedCornerShape(0.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedIndicatorColor = Color.Blue,
+                    unfocusedIndicatorColor = Color.Blue,
+                    focusedTrailingIconColor = Color.Black,
+                    unfocusedTrailingIconColor = Color.Black,
+                    focusedLeadingIconColor = Color.Black,
+                    unfocusedLeadingIconColor = Color.Black
+                ),
             )
         }
     }

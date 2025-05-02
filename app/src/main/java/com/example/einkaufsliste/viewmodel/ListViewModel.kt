@@ -6,13 +6,14 @@ import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class ListViewModel(
-    savedStateHandle: SavedStateHandle,
-    getShoppingListUseCase: GetShoppingListUseCase = GetShoppingListUseCase()
+class ListViewModel  (
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val getShoppingListUseCase: GetShoppingListUseCase = GetShoppingListUseCase()
     private val shoppingListId = savedStateHandle.get<String>("shoppingListId") ?: throw IllegalArgumentException("Keine Id für Shoppinglist bekommen")
+    private val shoppingList = getShoppingListUseCase.getShoppingList(shoppingListId.toInt())
 
-    private val listStateFlow = MutableStateFlow(ListViewModelState(getShoppingListUseCase.getShoppingList(shoppingListId.toInt())))
+    private val listStateFlow = MutableStateFlow(ListViewModelState(shoppingList))
     val listViewState = listStateFlow.asStateFlow()
 }
