@@ -9,4 +9,8 @@ class GetShoppingListUseCase(
     fun getAllShoppingLists(): List<ShoppingList> {
         return repository.getAllShoppingLists()
     }
+
+    fun getShoppingList(id: Int): ShoppingList {
+        return repository.getShoppingList(id)
+    }
 }

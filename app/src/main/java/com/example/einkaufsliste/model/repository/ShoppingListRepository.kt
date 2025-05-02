@@ -30,4 +30,9 @@ class ShoppingListRepository {
         val lists: RealmResults<RealmShoppingList> = realm.query<RealmShoppingList>().find()
         return lists.toList().map { it.toDomain() }
     }
+
+    fun getShoppingList(id: Int): ShoppingList {
+        val list: RealmShoppingList = realm.query<RealmShoppingList>("id == $0", "$id").find().first()
+        return list.toDomain()
+    }
 }
