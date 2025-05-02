@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -43,14 +42,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.einkaufsliste.NavigationDestinations
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.models.completion
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModel
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListsOverviewScreen(viewModel: ListsOverviewViewModel = viewModel()) {
+fun ListsOverviewScreen(navController: NavController, viewModel: ListsOverviewViewModel = viewModel()) {
     val state by viewModel.listOverviewViewState.collectAsState()
     Scaffold(
         topBar = { TopBar(state, viewModel) },
@@ -68,7 +68,9 @@ fun ListsOverviewScreen(viewModel: ListsOverviewViewModel = viewModel()) {
             modifier = Modifier.padding(paddingValues)
         ) {
             this.items(state.allLists) { list ->
-                ListListItem(shoppingList = list)
+                ListListItem(shoppingList = list) {
+                    navController.navigate(NavigationDestinations.List.name + "/$it")
+                }
             }
         }
     }
@@ -228,13 +230,14 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
 }
 
 @Composable
-private fun ListListItem(shoppingList: ShoppingList) {
+private fun ListListItem(shoppingList: ShoppingList, navigateToShoppingList: (id: Int) -> Unit) {
     Box(
         modifier = Modifier
             .padding(vertical = 15.dp, horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
-            //.background(Color.White)
+            .background(Color.White)
             .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
+            .clickable { navigateToShoppingList(shoppingList.id) }
     ) {
         Row(
             modifier = Modifier

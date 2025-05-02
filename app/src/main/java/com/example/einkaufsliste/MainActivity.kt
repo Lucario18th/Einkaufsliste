@@ -29,18 +29,21 @@ enum class NavigationDestinations() {
     List
 }
 
+
 @Composable
 private fun Navigation() {
+    val navController = rememberNavController()
     NavHost (
-        navController = rememberNavController(),
+        navController = navController,
         startDestination = NavigationDestinations.ListsOverview.name
     ) {
         composable(route = NavigationDestinations.ListsOverview.name) {
-            ListsOverviewScreen()
+            ListsOverviewScreen(navController)
         }
 
-        composable(route = NavigationDestinations.List.name) {
-            ListScreen()
+        composable(route = "${NavigationDestinations.List.name}/{shoppingListId}") {
+            val shoppingListId = it.arguments?.getString("shoppingListId")!!
+            ListScreen(navController)
         }
     }
 }
