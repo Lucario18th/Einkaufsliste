@@ -56,8 +56,8 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
             modifier = Modifier.padding(paddingValues)
         ) {
             LazyColumn {
-                this.items(state.list.items) { list ->
-                    ItemOnShoppingList(list)
+                this.items(state.list.items) { item ->
+                    ItemOnShoppingList(item, viewModel)
                 }
 
             }
@@ -159,14 +159,14 @@ private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
 }
 
 @Composable
-private fun ItemOnShoppingList(shoppingItem: ShoppingItem) {
+private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewModel) {
     Box(
         modifier = Modifier
             .padding(vertical = 15.dp, horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
+            .background(if (shoppingItem.checked) Color.Green else Color.White)
             .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
-            .clickable { /*TODO: ToggleCheckedState*/ }
+            .clickable { viewModel.toggleShoppingItemState(shoppingItem) }
     ) {
         Row(
             modifier = Modifier

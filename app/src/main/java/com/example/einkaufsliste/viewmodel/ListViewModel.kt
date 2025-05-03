@@ -2,7 +2,9 @@ package com.example.einkaufsliste.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.UpdateShoppingItemUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,6 +14,8 @@ class ListViewModel  (
 ) : ViewModel() {
 
     private val getShoppingListUseCase: GetShoppingListUseCase = GetShoppingListUseCase()
+    private val updateShoppingItemUseCase: UpdateShoppingItemUseCase = UpdateShoppingItemUseCase()
+
     private val shoppingListId = savedStateHandle.get<String>("shoppingListId") ?: throw IllegalArgumentException("Keine Id für Shoppinglist bekommen")
     private val shoppingList = getShoppingListUseCase.getShoppingList(shoppingListId.toInt())
 
@@ -27,6 +31,13 @@ class ListViewModel  (
     fun updateSearchFieldText(text: String) {
         listStateFlow.update {
             it.copy(searchFieldText = text)
+        }
+    }
+
+    fun toggleShoppingItemState(shoppingItem: ShoppingItem) {
+        updateShoppingItemUseCase.updateShoppingItemCheckedState(shoppingListId.toInt(),shoppingItem.id, !shoppingItem.checked)
+        listStateFlow.update {
+            it.copy(list = getShoppingListUseCase.getShoppingList(shoppingListId.toInt()))
         }
     }
 }

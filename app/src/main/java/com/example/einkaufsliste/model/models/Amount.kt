@@ -6,5 +6,5 @@ enum class Amount(val text: String) {
     TIMES("x"),
     LITRES("l"),
     GRAMM("g"),
-    PACKAGES("Packungen")
+    PACKAGES("Pkg")
 }

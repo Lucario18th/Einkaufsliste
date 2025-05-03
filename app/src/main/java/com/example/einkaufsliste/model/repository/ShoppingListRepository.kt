@@ -35,4 +35,11 @@ class ShoppingListRepository {
         val list: RealmShoppingList = realm.query<RealmShoppingList>("id == $0", "$id").find().first()
         return list.toDomain()
     }
+
+    fun updateShoppingItemCheckedState(listId: Int, itemId: Int, newState: Boolean) {
+        realm.writeBlocking {
+            val shoppingList = query<RealmShoppingList>("id == $0", "$listId").find().first()
+            shoppingList.items.find { it.id == itemId }?.checked = newState
+        }
+    }
 }
