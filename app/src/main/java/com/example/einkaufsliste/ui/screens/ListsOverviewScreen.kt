@@ -26,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,6 +44,7 @@ import androidx.navigation.NavController
 import com.example.einkaufsliste.NavigationDestinations
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.models.completion
+import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModel
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
 
@@ -67,8 +67,14 @@ fun ListsOverviewScreen(navController: NavController, viewModel: ListsOverviewVi
             modifier = Modifier.padding(paddingValues)
         ) {
             this.items(state.allLists) { list ->
-                ListListItem(shoppingList = list) {
-                    navController.navigate(NavigationDestinations.List.name + "/$it")
+                if (state.searchFieldOpen && list.name.contains(state.searchTextField)) {
+                    ListListItem(shoppingList = list) {
+                        navController.navigate(NavigationDestinations.List.name + "/$it")
+                    }
+                } else if (!state.searchFieldOpen) {
+                    ListListItem(shoppingList = list) {
+                        navController.navigate(NavigationDestinations.List.name + "/$it")
+                    }
                 }
             }
         }
@@ -203,39 +209,14 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
             )
         }
         if (state.searchFieldOpen) {
-            TextField(
-                value = state.searchTextField,
+            SearchField(
+                searchFieldValue = state.searchTextField,
                 onValueChange = { viewModel.updateSearchListText(it) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            viewModel.changeSearchbarState(false)
-                            viewModel.updateSearchListText("")
-                        }
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(0.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Blue,
-                    unfocusedIndicatorColor = Color.Blue,
-                    focusedTrailingIconColor = Color.Black,
-                    unfocusedTrailingIconColor = Color.Black,
-                    focusedLeadingIconColor = Color.Black,
-                    unfocusedLeadingIconColor = Color.Black
-                ),
-            )
+                onEmptySearchField = {
+                    viewModel.updateSearchListText("")
+                    viewModel.changeSearchbarState(false)
+                }
+            ) { }
         }
     }
 }

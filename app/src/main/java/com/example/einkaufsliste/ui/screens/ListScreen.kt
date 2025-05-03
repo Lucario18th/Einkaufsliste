@@ -17,15 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.einkaufsliste.model.models.ShoppingItem
+import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListViewModel
 import com.example.einkaufsliste.viewmodel.ListViewModelState
 
@@ -57,9 +55,12 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
         ) {
             LazyColumn {
                 this.items(state.list.items) { item ->
-                    ItemOnShoppingList(item, viewModel)
+                    if (state.searchFieldOpen && item.name.contains(state.searchFieldText)) {
+                        ItemOnShoppingList(item, viewModel)
+                    } else if (!state.searchFieldOpen) {
+                        ItemOnShoppingList(item, viewModel)
+                    }
                 }
-
             }
         }
     }
@@ -121,38 +122,14 @@ private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
             )
         }
         if (state.searchFieldOpen) {
-            TextField(
-                value = state.searchFieldText,
+            SearchField(
+                searchFieldValue = state.searchFieldText,
                 onValueChange = { viewModel.updateSearchFieldText(it) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null
-                    )
+                onEmptySearchField = {
+                    viewModel.updateSearchFieldText("")
+                    viewModel.updateSearchFieldState(false)
                 },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            viewModel.updateSearchFieldState(false)
-                            viewModel.updateSearchFieldText("")
-                        }
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(0.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Blue,
-                    unfocusedIndicatorColor = Color.Blue,
-                    focusedTrailingIconColor = Color.Black,
-                    unfocusedTrailingIconColor = Color.Black,
-                    focusedLeadingIconColor = Color.Black,
-                    unfocusedLeadingIconColor = Color.Black
-                ),
+                onSearch = {}
             )
         }
     }
@@ -177,13 +154,13 @@ private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewMo
                 text = "${shoppingItem.number} ${shoppingItem.amountType.text}",
                 color = Color.Gray,
 
-            )
+                )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = shoppingItem.name,
                 fontWeight = FontWeight.Bold,
 
-            )
+                )
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
