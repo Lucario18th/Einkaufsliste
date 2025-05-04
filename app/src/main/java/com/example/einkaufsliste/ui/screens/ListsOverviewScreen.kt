@@ -49,18 +49,21 @@ import com.example.einkaufsliste.viewmodel.ListsOverviewViewModel
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
 
 @Composable
-fun ListsOverviewScreen(navController: NavController, viewModel: ListsOverviewViewModel = viewModel()) {
+fun ListsOverviewScreen(
+    navController: NavController,
+    viewModel: ListsOverviewViewModel = viewModel()
+) {
     val state by viewModel.listOverviewViewState.collectAsState()
     Scaffold(
         topBar = { TopBar(state, viewModel) },
         floatingActionButton = {
-            AddButton(onClick = { viewModel.changeAddListDialogState(true) })
+            AddButton(onClick = { viewModel.changeAddRenameListDialogState(true) })
         },
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.White
     ) { paddingValues ->
         if (state.showAddListSheet) {
-            AddListDialog(viewModel, state)
+            AddRenameListDialog(viewModel, state)
         }
 
         LazyColumn(
@@ -82,12 +85,15 @@ fun ListsOverviewScreen(navController: NavController, viewModel: ListsOverviewVi
 }
 
 @Composable
-private fun AddListDialog(
+private fun AddRenameListDialog(
     viewModel: ListsOverviewViewModel,
-    state: ListsOverviewViewModelState
+    state: ListsOverviewViewModelState,
 ) {
     Dialog(
-        onDismissRequest = { viewModel.changeAddListDialogState(false) }
+        onDismissRequest = {
+            viewModel.changeAddRenameListDialogState(false)
+            viewModel.updateAddRenameListText("")
+        }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,26 +110,26 @@ private fun AddListDialog(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Einkaufsliste hinzufügen",
+                    text = if (state.shoppingListToRename == null) "Einkaufsliste hinzufügen" else "Einkaufsliste umbenennen",
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
                     color = Color.White
                 )
             }
             OutlinedTextField(
-                value = state.addListTextField,
-                onValueChange = { viewModel.updateAddListText(it) },
+                value = state.addRenameListTextField,
+                onValueChange = { viewModel.updateAddRenameListText(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 20.dp),
-                placeholder = { Text(text = "Name") },
+                placeholder = { Text(text = if (state.shoppingListToRename == null) "Name" else "neuer Name") },
                 singleLine = true,
                 trailingIcon = {
-                    if (state.addListTextField != "") {
+                    if (state.addRenameListTextField != "") {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = null,
-                            modifier = Modifier.clickable { viewModel.updateAddListText("") })
+                            modifier = Modifier.clickable { viewModel.updateAddRenameListText("") })
                     }
                 },
                 colors = TextFieldDefaults.colors(
@@ -138,18 +144,34 @@ private fun AddListDialog(
                     focusedIndicatorColor = Color.Blue,
                     unfocusedIndicatorColor = Color.Blue,
 
-                )
+                    )
             )
-            Row {
-                Button(
-                    onClick = { viewModel.addShoppingList(state.addListTextField) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-                ) {
-                    Text(text = "Erstellen", color = Color.White)
-                }
+            Button(
+                onClick = {
+                    viewModel.updateAddRenameListText("")
+                    viewModel.changeAddRenameListDialogState(false)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .border(2.dp, Color.Blue, RoundedCornerShape(30.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                )
+            ) {
+                Text(text = "Abbrechen", color = Color.Blue)
+            }
+            Button(
+                onClick = {
+                    if (state.shoppingListToRename == null) viewModel.addShoppingList(state.addRenameListTextField)
+                    else viewModel.updateListName(state.shoppingListToRename)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(text = if (state.shoppingListToRename == null) "Erstellen" else "Umbennenen", color = Color.White)
             }
         }
     }

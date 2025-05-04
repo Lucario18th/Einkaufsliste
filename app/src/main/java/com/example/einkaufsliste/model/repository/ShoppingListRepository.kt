@@ -42,4 +42,11 @@ class ShoppingListRepository {
             shoppingList.items.find { it.id == itemId }?.checked = newState
         }
     }
+
+    fun updateShoppingListName(listId: Int, newName: String) {
+        realm.writeBlocking {
+            val shoppingList = query<RealmShoppingList>("id == $0", "$listId").find().first()
+            shoppingList.name = newName
+        }
+    }
 }

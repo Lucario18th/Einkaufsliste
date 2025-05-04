@@ -9,6 +9,7 @@ data class ListsOverviewViewModelState(
     val searchFieldOpen: Boolean = false,
     val searchTextField: String = "",
     val showAddListSheet: Boolean = false,
-    val addListTextField: String = "",
+    val addRenameListTextField: String = "",
     val addListTextFieldHasError: Boolean = false,
+    val shoppingListToRename: ShoppingList? = null
 )

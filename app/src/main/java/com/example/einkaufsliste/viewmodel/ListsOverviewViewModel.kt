@@ -6,15 +6,17 @@ import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.usecase.CreateShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.GetRandomKeyValueUseCase
 import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.UpdateShoppingListNameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ListsOverviewViewModel(): ViewModel() {
-    val createShoppingList = CreateShoppingListUseCase()
-    val getRandomKeyValue = GetRandomKeyValueUseCase()
+    private val createShoppingList = CreateShoppingListUseCase()
+    private val getRandomKeyValue = GetRandomKeyValueUseCase()
     private val getShoppingListUseCase = GetShoppingListUseCase()
+    private val renameShoppingList = UpdateShoppingListNameUseCase()
 
     private val listOverviewStateFlow = MutableStateFlow(ListsOverviewViewModelState())
     val listOverviewViewState = listOverviewStateFlow.asStateFlow()
@@ -33,8 +35,8 @@ class ListsOverviewViewModel(): ViewModel() {
             val nextId = getRandomKeyValue()
             val newShoppingList = ShoppingList(nextId, name)
             shoppingLists.add(newShoppingList)
-            listOverviewStateFlow.update { it.copy(allLists = shoppingLists, addListTextField = "") }
-            changeAddListDialogState(false)
+            listOverviewStateFlow.update { it.copy(allLists = shoppingLists, addRenameListTextField = "") }
+            changeAddRenameListDialogState(false)
             viewModelScope.launch {
                 createShoppingList(newShoppingList)
             }
@@ -49,11 +51,17 @@ class ListsOverviewViewModel(): ViewModel() {
         listOverviewStateFlow.update { it.copy(searchFieldOpen = state) }
     }
 
-    fun changeAddListDialogState(state: Boolean) {
-        listOverviewStateFlow.update { it.copy(showAddListSheet = state) }
+    fun changeAddRenameListDialogState(state: Boolean, shoppingListToRename: ShoppingList? = null) {
+        listOverviewStateFlow.update { it.copy(showAddListSheet = state, shoppingListToRename = shoppingListToRename) }
     }
 
-    fun updateAddListText(text: String) {
-        listOverviewStateFlow.update { it.copy(addListTextField = text) }
+    fun updateAddRenameListText(text: String) {
+        listOverviewStateFlow.update { it.copy(addRenameListTextField = text) }
+    }
+
+    fun updateListName(shoppingList: ShoppingList) {
+        val newName = listOverviewViewState.value.addRenameListTextField
+        if (shoppingList.name != newName) renameShoppingList(shoppingList.id, newName)
+        listOverviewStateFlow.update { it.copy(addRenameListTextField = "", showAddListSheet = false) }
     }
 }
