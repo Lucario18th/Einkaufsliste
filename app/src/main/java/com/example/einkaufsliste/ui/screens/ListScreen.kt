@@ -63,6 +63,9 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
+            if (state.addEditItemDialogOpen) {
+                AddEditItemDialog(viewModel, state)
+            }
             LazyColumn {
                 this.items(state.list.items) { item ->
                     if (state.searchFieldOpen && item.name.contains(state.searchFieldText)) {
@@ -77,14 +80,130 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
 }
 
 @Composable
-private fun AddButton(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = { onClick() },
-        containerColor = Color.Blue,
-        contentColor = Color.White,
-        modifier = Modifier.size(75.dp)
+private fun AddEditItemDialog(
+    viewModel: ListViewModel,
+    state: ListViewModelState,
+) {
+    Dialog(
+        onDismissRequest = {
+            viewModel.changeAddEditItemDialogState(false)
+            viewModel.updateAddEditTextField("")
+        }
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = null)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Blue)
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (state.shoppingItemToEdit == null) "Eintrag hinzufügen" else "Eintrag bearbeiten",
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 20.dp)
+            ) {
+                OutlinedTextField(
+                    value = state.amountText,
+                    onValueChange = { viewModel.updateAmountTextField(it) },
+                    modifier = Modifier
+                        .fillMaxWidth(0.25f),
+                    placeholder = { Text(text = "1") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedTrailingIconColor = Color.Black,
+                        unfocusedTrailingIconColor = Color.Black,
+                        focusedPlaceholderColor = Color.Gray,
+                        unfocusedPlaceholderColor = Color.Gray,
+                        focusedIndicatorColor = Color.Blue,
+                        unfocusedIndicatorColor = Color.Blue,
+
+                        ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+            }
+
+            OutlinedTextField(
+                value = state.addEditShoppingItemText,
+                onValueChange = { viewModel.updateAddEditTextField(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 20.dp),
+                placeholder = { Text(text = if (state.shoppingItemToEdit == null) "Name" else "neuer Name") },
+                singleLine = true,
+                trailingIcon = {
+                    if (state.addEditShoppingItemText != "") {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.clickable { viewModel.updateAddEditTextField("") })
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedTrailingIconColor = Color.Black,
+                    unfocusedTrailingIconColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray,
+                    focusedIndicatorColor = Color.Blue,
+                    unfocusedIndicatorColor = Color.Blue,
+
+                    )
+            )
+            Button(
+                onClick = {
+                    viewModel.updateAddEditTextField("")
+                    viewModel.changeAddEditItemDialogState(false)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .border(2.dp, Color.Blue, RoundedCornerShape(30.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                )
+            ) {
+                Text(text = "Abbrechen", color = Color.Blue)
+            }
+            Button(
+                onClick = {
+                    //if (state.shoppingItemToEdit == null) viewModel.addShoppingList(state.addRenameListTextField)
+                    //else viewModel.updateListName(state.shoppingListToRename)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(Color.Blue),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(text = if (state.shoppingItemToEdit == null) "Erstellen" else "Umbennenen", color = Color.White)
+            }
+        }
     }
 }
 
