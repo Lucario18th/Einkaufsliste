@@ -16,9 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.einkaufsliste.NavigationDestinations
 import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListViewModel
@@ -43,7 +44,7 @@ import com.example.einkaufsliste.viewmodel.ListViewModelState
 fun ListScreen(navController: NavController, viewModel: ListViewModel = viewModel()) {
     val state by viewModel.listViewState.collectAsState()
     Scaffold(
-        topBar = { TopBar(state, viewModel) },
+        topBar = { TopBar(state, viewModel, navigateBack = { navController.navigate(NavigationDestinations.ListsOverview) }) },
         floatingActionButton = {
             AddButton(onClick = { })
         },
@@ -79,7 +80,7 @@ private fun AddButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
+private fun TopBar(state: ListViewModelState, viewModel: ListViewModel, navigateBack: () -> Unit) {
     Column {
         Row(
             modifier = Modifier
@@ -88,9 +89,10 @@ private fun TopBar(state: ListViewModelState, viewModel: ListViewModel) {
                 .padding(top = 50.dp, bottom = 20.dp, start = 30.dp, end = 30.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Settings,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = null,
-                tint = Color.White
+                tint = Color.White,
+                modifier = Modifier.clickable { navigateBack() }
             )
 
             Spacer(
