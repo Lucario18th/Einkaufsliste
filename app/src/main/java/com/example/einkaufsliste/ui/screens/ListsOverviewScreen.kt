@@ -172,7 +172,9 @@ private fun AddRenameListDialog(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(Color.Blue),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
             ) {
                 Text(text = if (state.shoppingListToRename == null) "Erstellen" else "Umbennenen", color = Color.White)
