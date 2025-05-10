@@ -1,8 +1,10 @@
 package com.example.einkaufsliste.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -71,13 +73,15 @@ fun ListsOverviewScreen(
         ) {
             this.items(state.allLists) { list ->
                 if (state.searchFieldOpen && list.name.contains(state.searchTextField)) {
-                    ListListItem(shoppingList = list) {
-                        navController.navigate(NavigationDestinations.List.name + "/$it")
-                    }
+                    ListListItem(shoppingList = list,
+                        navigateToShoppingList = { navController.navigate(NavigationDestinations.List.name + "/$it") },
+                        openRenameDialog = { viewModel.changeAddRenameListDialogState(true, it) }
+                    )
                 } else if (!state.searchFieldOpen) {
-                    ListListItem(shoppingList = list) {
-                        navController.navigate(NavigationDestinations.List.name + "/$it")
-                    }
+                    ListListItem(shoppingList = list,
+                        navigateToShoppingList = { navController.navigate(NavigationDestinations.List.name + "/$it") },
+                        openRenameDialog = { viewModel.changeAddRenameListDialogState(true, it) }
+                    )
                 }
             }
         }
@@ -243,15 +247,19 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ListListItem(shoppingList: ShoppingList, navigateToShoppingList: (id: Int) -> Unit) {
+private fun ListListItem(shoppingList: ShoppingList, navigateToShoppingList: (id: Int) -> Unit, openRenameDialog: (shoppingList: ShoppingList) -> Unit) {
     Box(
         modifier = Modifier
             .padding(vertical = 15.dp, horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Color.White)
             .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
-            .clickable { navigateToShoppingList(shoppingList.id) }
+            .combinedClickable(
+                onClick = { navigateToShoppingList(shoppingList.id) },
+                onLongClick = { openRenameDialog(shoppingList) }
+            )
     ) {
         Row(
             modifier = Modifier
