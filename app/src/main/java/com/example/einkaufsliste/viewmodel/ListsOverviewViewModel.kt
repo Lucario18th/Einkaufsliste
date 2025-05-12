@@ -22,6 +22,10 @@ class ListsOverviewViewModel(): ViewModel() {
     val listOverviewViewState = listOverviewStateFlow.asStateFlow()
 
     init {
+        loadAllLists()
+    }
+
+    private fun loadAllLists() {
         val allLists = getShoppingListUseCase.getAllShoppingLists()
         listOverviewStateFlow.update { it.copy(allLists = allLists) }
     }
@@ -52,7 +56,7 @@ class ListsOverviewViewModel(): ViewModel() {
     }
 
     fun changeAddRenameListDialogState(state: Boolean, shoppingListToRename: ShoppingList? = null) {
-        listOverviewStateFlow.update { it.copy(showAddListSheet = state, shoppingListToRename = shoppingListToRename) }
+        listOverviewStateFlow.update { it.copy(showAddListSheet = state, shoppingListToRename = shoppingListToRename, addRenameListTextField = shoppingListToRename?.name?:  "") }
     }
 
     fun updateAddRenameListText(text: String) {
@@ -63,5 +67,6 @@ class ListsOverviewViewModel(): ViewModel() {
         val newName = listOverviewViewState.value.addRenameListTextField
         if (shoppingList.name != newName) renameShoppingList(shoppingList.id, newName)
         listOverviewStateFlow.update { it.copy(addRenameListTextField = "", showAddListSheet = false) }
+        loadAllLists()
     }
 }

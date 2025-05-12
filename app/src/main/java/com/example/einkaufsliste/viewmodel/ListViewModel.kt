@@ -40,4 +40,16 @@ class ListViewModel  (
             it.copy(list = getShoppingListUseCase.getShoppingList(shoppingListId.toInt()))
         }
     }
+
+    fun changeAddEditItemDialogState(state: Boolean, shoppingListToRename: ShoppingItem? = null) {
+        listStateFlow.update { it.copy(addEditItemDialogOpen = state, shoppingItemToEdit = shoppingListToRename, addEditShoppingItemText = shoppingListToRename?.name?:  "") }
+    }
+
+    fun updateAddEditTextField(text: String) {
+        listStateFlow.update { it.copy(addEditShoppingItemText = text) }
+    }
+
+    fun updateAmountTextField(text: String) {
+        listStateFlow.update { it.copy(amountText = text) }
+    }
 }
