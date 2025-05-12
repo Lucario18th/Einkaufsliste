@@ -53,7 +53,7 @@ import com.example.einkaufsliste.viewmodel.ListViewModelState
 fun ListScreen(navController: NavController, viewModel: ListViewModel = viewModel()) {
     val state by viewModel.listViewState.collectAsState()
     Scaffold(
-        topBar = { TopBar(state, viewModel, navigateBack = { navController.navigate(NavigationDestinations.ListsOverview) }) },
+        topBar = { TopBar(state, viewModel, navigateBack = { navController.navigate(NavigationDestinations.ListsOverview.name) }) },
         floatingActionButton = {
             AddButton(onClick = { viewModel.changeAddEditItemDialogState(true, null) })
         },
