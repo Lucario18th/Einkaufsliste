@@ -4,10 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
-import com.example.einkaufsliste.model.usecase.CreateShoppingItemUseCase
-import com.example.einkaufsliste.model.usecase.CreateShoppingListUseCase
-import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
-import com.example.einkaufsliste.model.usecase.UpdateShoppingItemUseCase
+import com.example.einkaufsliste.model.usecase.item.CreateShoppingItemUseCase
+import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.item.UpdateShoppingItemUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

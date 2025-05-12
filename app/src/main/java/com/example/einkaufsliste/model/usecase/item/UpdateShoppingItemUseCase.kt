@@ -1,4 +1,4 @@
-package com.example.einkaufsliste.model.usecase
+package com.example.einkaufsliste.model.usecase.item
 
 import com.example.einkaufsliste.model.repository.ShoppingListRepository
 

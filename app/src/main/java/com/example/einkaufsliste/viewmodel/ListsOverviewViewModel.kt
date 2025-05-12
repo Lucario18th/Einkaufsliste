@@ -3,10 +3,10 @@ package com.example.einkaufsliste.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.einkaufsliste.model.models.ShoppingList
-import com.example.einkaufsliste.model.usecase.CreateShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.list.CreateShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.GetRandomKeyValueUseCase
-import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
-import com.example.einkaufsliste.model.usecase.UpdateShoppingListNameUseCase
+import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.list.UpdateShoppingListNameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
