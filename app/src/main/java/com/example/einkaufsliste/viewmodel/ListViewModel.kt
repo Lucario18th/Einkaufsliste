@@ -2,7 +2,10 @@ package com.example.einkaufsliste.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
+import com.example.einkaufsliste.model.usecase.CreateShoppingItemUseCase
+import com.example.einkaufsliste.model.usecase.CreateShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.GetShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.UpdateShoppingItemUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +18,18 @@ class ListViewModel  (
 
     private val getShoppingListUseCase: GetShoppingListUseCase = GetShoppingListUseCase()
     private val updateShoppingItemUseCase: UpdateShoppingItemUseCase = UpdateShoppingItemUseCase()
+    private val createShoppingItemUseCase: CreateShoppingItemUseCase = CreateShoppingItemUseCase()
 
     private val shoppingListId = savedStateHandle.get<String>("shoppingListId") ?: throw IllegalArgumentException("Keine Id für Shoppinglist bekommen")
     private val shoppingList = getShoppingListUseCase.getShoppingList(shoppingListId.toInt())
 
     private val listStateFlow = MutableStateFlow(ListViewModelState(shoppingList))
     val listViewState = listStateFlow.asStateFlow()
+
+    private fun updateShoppingList() {
+        val shoppingList = getShoppingListUseCase.getShoppingList(shoppingListId.toInt())
+        listStateFlow.update { it.copy(list = shoppingList) }
+    }
 
     fun updateSearchFieldState(isOpen: Boolean) {
         listStateFlow.update {
@@ -51,5 +60,10 @@ class ListViewModel  (
 
     fun updateAmountTextField(text: String) {
         listStateFlow.update { it.copy(amountText = text) }
+    }
+
+    fun createShoppingItem(name: String, amountType: Amount, number: Int) {
+        createShoppingItemUseCase(name, amountType, number, shoppingList.id)
+        updateShoppingList()
     }
 }

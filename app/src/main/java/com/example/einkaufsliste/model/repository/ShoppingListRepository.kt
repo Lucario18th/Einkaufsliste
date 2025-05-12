@@ -1,5 +1,6 @@
 package com.example.einkaufsliste.model.repository
 
+import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.models.toDomain
 import com.example.einkaufsliste.model.models.toRealmObject
@@ -47,6 +48,13 @@ class ShoppingListRepository {
         realm.writeBlocking {
             val shoppingList = query<RealmShoppingList>("id == $0", "$listId").find().first()
             shoppingList.name = newName
+        }
+    }
+
+    fun createShoppingItem(shoppingItem: ShoppingItem, listId: Int) {
+        realm.writeBlocking {
+            val shoppingList = query<RealmShoppingList>("id == $0", "$listId").find().first()
+            shoppingList.items.add(shoppingItem.toRealmObject())
         }
     }
 }
