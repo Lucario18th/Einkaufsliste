@@ -25,7 +25,7 @@ fun String.toAmount(): Amount {
         "x" -> Amount.TIMES
         "l" -> Amount.LITRES
         "g" -> Amount.GRAMM
-        "Packungen" -> Amount.PACKAGES
+        "Pkg" -> Amount.PACKAGES
         else -> throw IllegalArgumentException("String $this konnte nicht in Amount geparsed werden")
     }
 }

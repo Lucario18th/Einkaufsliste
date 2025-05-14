@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.model.usecase.item.CreateShoppingItemUseCase
-import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.item.UpdateShoppingItemUseCase
+import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -64,5 +64,13 @@ class ListViewModel  (
     fun createShoppingItem(name: String, amountType: Amount, number: Int) {
         createShoppingItemUseCase(name, amountType, number, shoppingList.id)
         updateShoppingList()
+    }
+
+    fun updateAmountMenuState(newState: Boolean) {
+        listStateFlow.update { it.copy(amountMenuOpen = newState) }
+    }
+
+    fun updateAmountType(amountType: Amount) {
+        listStateFlow.update { it.copy(chosenAmountType = amountType, amountMenuOpen = false) }
     }
 }

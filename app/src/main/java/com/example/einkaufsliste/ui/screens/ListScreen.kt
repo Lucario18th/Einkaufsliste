@@ -17,10 +17,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -43,6 +47,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.einkaufsliste.NavigationDestinations
+import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.ui.components.AddButton
 import com.example.einkaufsliste.ui.components.SearchField
@@ -115,7 +120,7 @@ private fun AddEditItemDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 20.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
             ) {
                 OutlinedTextField(
                     value = state.amountText,
@@ -134,14 +139,46 @@ private fun AddEditItemDialog(
                         focusedPlaceholderColor = Color.Gray,
                         unfocusedPlaceholderColor = Color.Gray,
                         focusedIndicatorColor = Color.Blue,
-                        unfocusedIndicatorColor = Color.Blue,
-
+                        unfocusedIndicatorColor = Color.Gray,
                         ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     )
                 )
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                OutlinedTextField(
+                    value = state.chosenAmountType.text,
+                    onValueChange = {  },
+                    modifier = Modifier
+                        .fillMaxWidth(1.0f)
+                        .clickable { viewModel.updateAmountMenuState(true) },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = Color.White,
+                        disabledTextColor = Color.Black,
+                        disabledTrailingIconColor = Color.Black,
+                        disabledPlaceholderColor = Color.Gray,
+                        disabledIndicatorColor = if (state.amountMenuOpen) Color.Blue else Color.Gray
+                    ),
+                    enabled = false,
+                    trailingIcon = {
+                        if (state.amountMenuOpen) Icon(Icons.Filled.KeyboardArrowDown, null) else Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null)
+                    }
+                )
+                DropdownMenu(
+                    expanded = state.amountMenuOpen,
+                    onDismissRequest = { viewModel.updateAmountMenuState(false) }
+                ) {
+                    Amount.entries.forEach {
+                        DropdownMenuItem(
+                            text = { Text(it.text) },
+                            onClick = { viewModel.updateAmountType(it) }
+                        )
+                    }
+                }
             }
 
             OutlinedTextField(
@@ -170,8 +207,7 @@ private fun AddEditItemDialog(
                     focusedPlaceholderColor = Color.Gray,
                     unfocusedPlaceholderColor = Color.Gray,
                     focusedIndicatorColor = Color.Blue,
-                    unfocusedIndicatorColor = Color.Blue,
-
+                    unfocusedIndicatorColor = Color.Gray,
                     )
             )
             Button(
@@ -191,8 +227,12 @@ private fun AddEditItemDialog(
             }
             Button(
                 onClick = {
-                    //if (state.shoppingItemToEdit == null) viewModel.addShoppingList(state.addRenameListTextField)
-                    //else viewModel.updateListName(state.shoppingListToRename)
+                    viewModel.createShoppingItem(
+                        name = state.addEditShoppingItemText,
+                        amountType = state.chosenAmountType,
+                        number = state.amountText.toInt()
+                    )
+                    viewModel.changeAddEditItemDialogState(false)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
