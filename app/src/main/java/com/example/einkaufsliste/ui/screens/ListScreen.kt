@@ -49,7 +49,6 @@ import androidx.navigation.NavController
 import com.example.einkaufsliste.NavigationDestinations
 import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
-import com.example.einkaufsliste.ui.components.AddButton
 import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListViewModel
 import com.example.einkaufsliste.viewmodel.ListViewModelState
@@ -59,17 +58,14 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
     val state by viewModel.listViewState.collectAsState()
     Scaffold(
         topBar = { TopBar(state, viewModel, navigateBack = { navController.navigate(NavigationDestinations.ListsOverview.name) }) },
-        floatingActionButton = {
-            AddButton(onClick = { viewModel.changeAddEditItemDialogState(true, null) })
-        },
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.White
     ) { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
-            if (state.addEditItemDialogOpen) {
-                AddEditItemDialog(viewModel, state)
+            if (state.shoppingItemToEdit != null) {
+                EditItemDialog(viewModel, state)
             }
             LazyColumn {
                 this.items(state.list.items) { item ->
@@ -85,14 +81,14 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
 }
 
 @Composable
-private fun AddEditItemDialog(
+private fun EditItemDialog(
     viewModel: ListViewModel,
     state: ListViewModelState,
 ) {
     Dialog(
         onDismissRequest = {
-            viewModel.changeAddEditItemDialogState(false)
-            viewModel.updateAddEditTextField("")
+            viewModel.changeEditItemDialogState(null)
+            viewModel.updateEditTextField("")
         }
     ) {
         Column(
@@ -110,7 +106,7 @@ private fun AddEditItemDialog(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (state.shoppingItemToEdit == null) "Eintrag hinzufügen" else "Eintrag bearbeiten",
+                    text = "Eintrag bearbeiten",
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
                     color = Color.White
@@ -149,52 +145,57 @@ private fun AddEditItemDialog(
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                OutlinedTextField(
-                    value = state.chosenAmountType.text,
-                    onValueChange = {  },
-                    modifier = Modifier
-                        .fillMaxWidth(1.0f)
-                        .clickable { viewModel.updateAmountMenuState(true) },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        disabledContainerColor = Color.White,
-                        disabledTextColor = Color.Black,
-                        disabledTrailingIconColor = Color.Black,
-                        disabledPlaceholderColor = Color.Gray,
-                        disabledIndicatorColor = if (state.amountMenuOpen) Color.Blue else Color.Gray
-                    ),
-                    enabled = false,
-                    trailingIcon = {
-                        if (state.amountMenuOpen) Icon(Icons.Filled.KeyboardArrowDown, null) else Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null)
-                    }
-                )
-                DropdownMenu(
-                    expanded = state.amountMenuOpen,
-                    onDismissRequest = { viewModel.updateAmountMenuState(false) }
-                ) {
-                    Amount.entries.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it.text) },
-                            onClick = { viewModel.updateAmountType(it) }
-                        )
+                Column(modifier = Modifier.fillMaxWidth(1.0f)) {
+                    OutlinedTextField(
+                        value = state.chosenAmountType.text,
+                        onValueChange = { },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.updateAmountMenuState(true) },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            disabledContainerColor = Color.White,
+                            disabledTextColor = Color.Black,
+                            disabledTrailingIconColor = Color.Black,
+                            disabledPlaceholderColor = Color.Gray,
+                            disabledIndicatorColor = if (state.amountMenuOpen) Color.Blue else Color.Gray
+                        ),
+                        enabled = false,
+                        trailingIcon = {
+                            if (state.amountMenuOpen) Icon(
+                                Icons.Filled.KeyboardArrowDown,
+                                null
+                            ) else Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null)
+                        }
+                    )
+                    DropdownMenu(
+                        expanded = state.amountMenuOpen,
+                        onDismissRequest = { viewModel.updateAmountMenuState(false) }
+                    ) {
+                        Amount.entries.forEach {
+                            DropdownMenuItem(
+                                text = { Text(it.text) },
+                                onClick = { viewModel.updateAmountType(it) }
+                            )
+                        }
                     }
                 }
             }
 
             OutlinedTextField(
-                value = state.addEditShoppingItemText,
-                onValueChange = { viewModel.updateAddEditTextField(it) },
+                value = state.editShoppingItemText,
+                onValueChange = { viewModel.updateEditTextField(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 20.dp),
-                placeholder = { Text(text = if (state.shoppingItemToEdit == null) "Name" else "neuer Name") },
+                placeholder = { Text(text = "neuer Name") },
                 singleLine = true,
                 trailingIcon = {
-                    if (state.addEditShoppingItemText != "") {
+                    if (state.editShoppingItemText != "") {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = null,
-                            modifier = Modifier.clickable { viewModel.updateAddEditTextField("") })
+                            modifier = Modifier.clickable { viewModel.updateEditTextField("") })
                     }
                 },
                 colors = TextFieldDefaults.colors(
@@ -212,8 +213,8 @@ private fun AddEditItemDialog(
             )
             Button(
                 onClick = {
-                    viewModel.updateAddEditTextField("")
-                    viewModel.changeAddEditItemDialogState(false)
+                    viewModel.updateEditTextField("")
+                    viewModel.changeEditItemDialogState(null)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -228,11 +229,11 @@ private fun AddEditItemDialog(
             Button(
                 onClick = {
                     viewModel.createShoppingItem(
-                        name = state.addEditShoppingItemText,
+                        name = state.editShoppingItemText,
                         amountType = state.chosenAmountType,
                         number = state.amountText.toInt()
                     )
-                    viewModel.changeAddEditItemDialogState(false)
+                    viewModel.changeEditItemDialogState(null)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -241,7 +242,7 @@ private fun AddEditItemDialog(
                     .background(Color.Blue),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
             ) {
-                Text(text = if (state.shoppingItemToEdit == null) "Erstellen" else "Umbennenen", color = Color.White)
+                Text(text = "Fertig", color = Color.White)
             }
         }
     }

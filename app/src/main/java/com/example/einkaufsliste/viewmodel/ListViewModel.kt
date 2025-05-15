@@ -49,12 +49,12 @@ class ListViewModel  (
         }
     }
 
-    fun changeAddEditItemDialogState(state: Boolean, shoppingListToRename: ShoppingItem? = null) {
-        listStateFlow.update { it.copy(addEditItemDialogOpen = state, shoppingItemToEdit = shoppingListToRename, addEditShoppingItemText = shoppingListToRename?.name?:  "") }
+    fun changeEditItemDialogState(shoppingListToRename: ShoppingItem?) {
+        listStateFlow.update { it.copy(shoppingItemToEdit = shoppingListToRename, editShoppingItemText = shoppingListToRename?.name?:  "") }
     }
 
-    fun updateAddEditTextField(text: String) {
-        listStateFlow.update { it.copy(addEditShoppingItemText = text) }
+    fun updateEditTextField(text: String) {
+        listStateFlow.update { it.copy(editShoppingItemText = text) }
     }
 
     fun updateAmountTextField(text: String) {

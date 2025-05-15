@@ -8,9 +8,8 @@ data class ListViewModelState(
     val list: ShoppingList,
     val searchFieldOpen: Boolean = false,
     val searchFieldText: String = "",
-    val addEditItemDialogOpen: Boolean = false,
     val shoppingItemToEdit: ShoppingItem? = null,
-    val addEditShoppingItemText: String = "",
+    val editShoppingItemText: String = "",
     val amountText: String = "",
     val amountMenuOpen: Boolean = false,
     val chosenAmountType: Amount = Amount.TIMES
