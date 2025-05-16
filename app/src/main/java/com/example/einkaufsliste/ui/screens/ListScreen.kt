@@ -96,11 +96,17 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
                 EditItemDialog(viewModel, state)
             }
             LazyColumn {
-                this.items(state.list.items) { item ->
-                    if (state.searchFieldOpen && item.name.contains(state.searchFieldText)) {
-                        ItemOnShoppingList(item, viewModel)
-                    } else if (!state.searchFieldOpen) {
-                        ItemOnShoppingList(item, viewModel)
+                if (state.searchFieldOpen) {
+                    this.items(state.list.items) { item ->
+                        if (item.name.contains(state.searchFieldText))
+                            ItemOnShoppingList(item, viewModel)
+                    }
+                } else {
+                    this.items(state.list.items) { item ->
+                        if (!item.checked) ItemOnShoppingList(item, viewModel)
+                    }
+                    this.items(state.list.items) { item ->
+                        if (item.checked) ItemOnShoppingList(item, viewModel)
                     }
                 }
             }
