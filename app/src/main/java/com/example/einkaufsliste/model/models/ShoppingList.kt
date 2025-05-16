@@ -35,15 +35,6 @@ fun ShoppingList.completion(): Int {
     return itemCount
 }
 
-fun getTestList(): ShoppingList {
-    val list = mutableListOf<ShoppingItem>()
-    list.add(ShoppingItem(1, "test", Amount.KG, 1, true))
-    list.add(ShoppingItem(2, "test1", Amount.LITRES, 1, true))
-    list.add(ShoppingItem(3, "test2", Amount.ML, 1, true))
-    list.add(ShoppingItem(4, "test3", Amount.PACKAGES, 1, false))
-    return ShoppingList(1, "testlist", list)
-}
-
 private fun List<ShoppingItem>.toRealmShoppingItemList():RealmList<RealmShoppingItem> {
     val newList: MutableList<RealmShoppingItem> = mutableListOf()
     this.forEach { shoppingItem ->

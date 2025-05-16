@@ -9,7 +9,7 @@ class CreateShoppingItemUseCase {
     private val repository = ShoppingListRepository()
     private val getRandomKeyValueUseCase = GetRandomKeyValueUseCase()
 
-    operator fun invoke(name: String, amountType: Amount, number: Int, listId: Int) {
+    operator fun invoke(name: String, amountType: Amount, number: Double, listId: Int) {
         val shoppingItem = ShoppingItem(
             id = getRandomKeyValueUseCase(),
             name = name,

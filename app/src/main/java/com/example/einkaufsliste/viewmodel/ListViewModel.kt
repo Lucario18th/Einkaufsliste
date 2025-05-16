@@ -65,10 +65,10 @@ class ListViewModel  (
     fun createShoppingItem(name: String, amountType: Amount, number: String) {
         try {
             if (name != "") {
-                createShoppingItemUseCase(name, amountType, number.toInt(), shoppingList.id)
+                createShoppingItemUseCase(name, amountType, number.toDouble(), shoppingList.id)
             }
         } catch (_: NumberFormatException) {
-            createShoppingItemUseCase(name, amountType, 1, shoppingList.id)
+            createShoppingItemUseCase(name, amountType, 1.0, shoppingList.id)
         }
         updateShoppingList()
         makeValuesDefault()

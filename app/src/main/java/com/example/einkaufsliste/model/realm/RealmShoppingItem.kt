@@ -7,14 +7,14 @@ class RealmShoppingItem() : RealmObject {
     @PrimaryKey
     var id: Int = 0
     var name: String = ""
-    var amountType: String = ""
-    var number: Int = 0
+    var amountType: String = "x"
+    var number: Double = 1.0
     var checked: Boolean = false
     constructor(
         id: Int = 0,
         name: String,
-        amountType: String,
-        number: Int = 1,
+        amountType: String = "x",
+        number: Double = 1.0,
         checked: Boolean = false
     ) : this() {
         this.id = id

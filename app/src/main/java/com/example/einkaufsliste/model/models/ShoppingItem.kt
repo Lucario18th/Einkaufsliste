@@ -6,7 +6,7 @@ data class ShoppingItem(
     val id: Int,
     val name: String,
     val amountType: Amount = Amount.TIMES,
-    val number: Int = 1,
+    val number: Double = 1.0,
     val checked: Boolean = false,
 )
 
