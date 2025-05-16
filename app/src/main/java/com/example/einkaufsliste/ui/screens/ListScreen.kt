@@ -35,6 +35,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -105,9 +107,18 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
                     this.items(state.list.items) { item ->
                         if (!item.checked) ItemOnShoppingList(item, viewModel)
                     }
-                    this.items(state.list.items) { item ->
-                        if (item.checked) ItemOnShoppingList(item, viewModel)
+                    this.item {
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            thickness = 2.dp,
+                            color = Color.DarkGray
+                        )
                     }
+                }
+                this.items(state.list.items) { item ->
+                    if (item.checked) ItemOnShoppingList(item, viewModel)
                 }
             }
         }
@@ -537,7 +548,7 @@ private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewMo
         modifier = Modifier
             .padding(vertical = 15.dp, horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(if (shoppingItem.checked) Color.Green else Color.White)
+            .background(if (shoppingItem.checked) Color.LightGray else Color.White)
             .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
             .combinedClickable(
                 onClick = { viewModel.toggleShoppingItemState(shoppingItem) },
@@ -552,14 +563,14 @@ private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewMo
             Text(
                 text = "${shoppingItem.number} ${shoppingItem.amountType.text}",
                 color = Color.Gray,
-
-                )
+                textDecoration = if (shoppingItem.checked) TextDecoration.LineThrough else null
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = shoppingItem.name,
                 fontWeight = FontWeight.Bold,
-
-                )
+                textDecoration = if (shoppingItem.checked) TextDecoration.LineThrough else null
+            )
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
