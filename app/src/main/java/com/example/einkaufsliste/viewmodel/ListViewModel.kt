@@ -64,7 +64,9 @@ class ListViewModel  (
 
     fun createShoppingItem(name: String, amountType: Amount, number: String) {
         try {
-            createShoppingItemUseCase(name, amountType, number.toInt(), shoppingList.id)
+            if (name != "") {
+                createShoppingItemUseCase(name, amountType, number.toInt(), shoppingList.id)
+            }
         } catch (_: NumberFormatException) {
             createShoppingItemUseCase(name, amountType, 1, shoppingList.id)
         }
@@ -91,10 +93,6 @@ class ListViewModel  (
 
     fun updateEditAmountType(amountType: Amount) {
         listStateFlow.update { it.copy(editAmountType = amountType, editAmountMenuOpen = false) }
-    }
-
-    fun changeAddItemBottomSheetState(state: Boolean) {
-        listStateFlow.update { it.copy(showAppBottomSheet = state) }
     }
 
     fun updateAddTextField(text: String) {

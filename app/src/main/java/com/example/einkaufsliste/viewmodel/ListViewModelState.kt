@@ -13,7 +13,6 @@ data class ListViewModelState(
     val editAmountText: String = "",
     val editAmountMenuOpen: Boolean = false,
     val editAmountType: Amount = Amount.TIMES,
-    val showAppBottomSheet: Boolean = true,
     val addShoppingItemText: String = "",
     val addAmountText: String = "",
     val addAmountMenuOpen: Boolean = false,
