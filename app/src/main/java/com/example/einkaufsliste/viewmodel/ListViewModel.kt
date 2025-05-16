@@ -51,26 +51,65 @@ class ListViewModel  (
 
     fun changeEditItemDialogState(shoppingListToRename: ShoppingItem?) {
         listStateFlow.update { it.copy(shoppingItemToEdit = shoppingListToRename, editShoppingItemText = shoppingListToRename?.name?:  "") }
+        makeValuesDefault()
     }
 
     fun updateEditTextField(text: String) {
         listStateFlow.update { it.copy(editShoppingItemText = text) }
     }
 
-    fun updateAmountTextField(text: String) {
-        listStateFlow.update { it.copy(amountText = text) }
+    fun updateEditAmountTextField(text: String) {
+        listStateFlow.update { it.copy(editAmountText = text) }
     }
 
-    fun createShoppingItem(name: String, amountType: Amount, number: Int) {
-        createShoppingItemUseCase(name, amountType, number, shoppingList.id)
+    fun createShoppingItem(name: String, amountType: Amount, number: String) {
+        try {
+            createShoppingItemUseCase(name, amountType, number.toInt(), shoppingList.id)
+        } catch (_: NumberFormatException) {
+            createShoppingItemUseCase(name, amountType, 1, shoppingList.id)
+        }
         updateShoppingList()
+        makeValuesDefault()
     }
 
-    fun updateAmountMenuState(newState: Boolean) {
-        listStateFlow.update { it.copy(amountMenuOpen = newState) }
+    fun makeValuesDefault() {
+        listStateFlow.update {
+            it.copy(
+                editShoppingItemText = "",
+                editAmountText = "",
+                editAmountType = Amount.TIMES,
+                addAmountText = "",
+                addAmountType = Amount.TIMES,
+                addShoppingItemText = ""
+            )
+        }
     }
 
-    fun updateAmountType(amountType: Amount) {
-        listStateFlow.update { it.copy(chosenAmountType = amountType, amountMenuOpen = false) }
+    fun updateEditAmountMenuState(newState: Boolean) {
+        listStateFlow.update { it.copy(editAmountMenuOpen = newState) }
+    }
+
+    fun updateEditAmountType(amountType: Amount) {
+        listStateFlow.update { it.copy(editAmountType = amountType, editAmountMenuOpen = false) }
+    }
+
+    fun changeAddItemBottomSheetState(state: Boolean) {
+        listStateFlow.update { it.copy(showAppBottomSheet = state) }
+    }
+
+    fun updateAddTextField(text: String) {
+        listStateFlow.update { it.copy(addShoppingItemText = text) }
+    }
+
+    fun updateAddAmountTextField(text: String) {
+        listStateFlow.update { it.copy(addAmountText = text) }
+    }
+
+    fun updateAddAmountMenuState(newState: Boolean) {
+        listStateFlow.update { it.copy(addAmountMenuOpen = newState) }
+    }
+
+    fun updateAddAmountType(amountType: Amount) {
+        listStateFlow.update { it.copy(addAmountType = amountType, addAmountMenuOpen = false) }
     }
 }

@@ -3,40 +3,53 @@ package com.example.einkaufsliste.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,14 +65,27 @@ import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListViewModel
 import com.example.einkaufsliste.viewmodel.ListViewModelState
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(navController: NavController, viewModel: ListViewModel = viewModel()) {
     val state by viewModel.listViewState.collectAsState()
-    Scaffold(
-        topBar = { TopBar(state, viewModel, navigateBack = { navController.navigate(NavigationDestinations.ListsOverview.name) }) },
+    val sheetState = rememberBottomSheetScaffoldState()
+
+    BottomSheetScaffold(
+        topBar = {
+            TopBar(
+                state,
+                viewModel,
+                navigateBack = { navController.navigate(NavigationDestinations.ListsOverview.name) })
+        },
         modifier = Modifier.fillMaxSize(),
-        containerColor = Color.White
+        containerColor = Color.White,
+        sheetContent = { AddItemBottomSheet(viewModel, state, sheetState) },
+        scaffoldState = sheetState,
+        sheetPeekHeight = 250.dp,
+        sheetContainerColor = Color.DarkGray
     ) { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
@@ -78,6 +104,187 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddItemBottomSheet(
+    viewModel: ListViewModel,
+    state: ListViewModelState,
+    sheetState: BottomSheetScaffoldState,
+) {
+    val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp, start = 30.dp, end = 30.dp),
+    ) {
+        Text(
+            text = "Eintrag hinzufügen",
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = Color.White,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        if (sheetState.bottomSheetState.targetValue == SheetValue.Expanded) {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(Color.White)
+                    .align(Alignment.CenterEnd)
+                    .clickable {
+                        scope.launch {
+                            sheetState.bottomSheetState.partialExpand()
+                            viewModel.makeValuesDefault()
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = null,
+                    tint = Color.Black
+                )
+            }
+        }
+    }
+
+    if (sheetState.bottomSheetState.targetValue == SheetValue.Expanded) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 10.dp)
+        ) {
+            OutlinedTextField(
+                value = state.addAmountText,
+                onValueChange = { viewModel.updateAddAmountTextField(it) },
+                modifier = Modifier
+                    .fillMaxWidth(0.25f),
+                placeholder = { Text(text = "1") },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedTrailingIconColor = Color.Black,
+                    unfocusedTrailingIconColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray,
+                    focusedIndicatorColor = Color.Blue,
+                    unfocusedIndicatorColor = Color.Gray,
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column(modifier = Modifier.fillMaxWidth(1.0f)) {
+                OutlinedTextField(
+                    value = state.addAmountType.text,
+                    onValueChange = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.updateAddAmountMenuState(true) },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = Color.White,
+                        disabledTextColor = Color.Black,
+                        disabledTrailingIconColor = Color.Black,
+                        disabledPlaceholderColor = Color.Gray,
+                        disabledIndicatorColor = if (state.editAmountMenuOpen) Color.Blue else Color.Gray
+                    ),
+                    enabled = false,
+                    trailingIcon = {
+                        if (state.editAmountMenuOpen) Icon(
+                            Icons.Filled.KeyboardArrowDown,
+                            null
+                        ) else Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null)
+                    }
+                )
+                DropdownMenu(
+                    expanded = state.addAmountMenuOpen,
+                    onDismissRequest = { viewModel.updateAddAmountMenuState(false) }
+                ) {
+                    Amount.entries.forEach {
+                        DropdownMenuItem(
+                            text = { Text(it.text) },
+                            onClick = { viewModel.updateAddAmountType(it) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    OutlinedTextField(
+        value = state.addShoppingItemText,
+        onValueChange = { viewModel.updateAddTextField(it) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp, vertical = 20.dp)
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                    if (upEvent != null) {
+                        scope.launch { sheetState.bottomSheetState.expand() }
+                    }
+                }
+            },
+        placeholder = { Text(text = "Name") },
+        singleLine = true,
+        trailingIcon = {
+            if (state.addShoppingItemText != "") {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { viewModel.updateAddTextField("") })
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            focusedTrailingIconColor = Color.Black,
+            unfocusedTrailingIconColor = Color.Black,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedPlaceholderColor = Color.Gray,
+            focusedIndicatorColor = Color.Blue,
+            unfocusedIndicatorColor = Color.Gray,
+        ),
+    )
+
+    if (sheetState.bottomSheetState.targetValue == SheetValue.Expanded) {
+        Button(
+            onClick = {
+                viewModel.createShoppingItem(
+                    name = state.addShoppingItemText,
+                    amountType = state.addAmountType,
+                    number = state.addAmountText
+                )
+                scope.launch { sheetState.bottomSheetState.partialExpand() }
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .clip(RoundedCornerShape(30.dp))
+                .background(Color.Blue),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+        ) {
+            Text(text = "Erstellen", color = Color.White)
+        }
+    }
+
+    Spacer(modifier = Modifier.fillMaxHeight(0.85f))
+
 }
 
 @Composable
@@ -119,8 +326,8 @@ private fun EditItemDialog(
                     .padding(horizontal = 10.dp, vertical = 10.dp)
             ) {
                 OutlinedTextField(
-                    value = state.amountText,
-                    onValueChange = { viewModel.updateAmountTextField(it) },
+                    value = state.editAmountText,
+                    onValueChange = { viewModel.updateEditAmountTextField(it) },
                     modifier = Modifier
                         .fillMaxWidth(0.25f),
                     placeholder = { Text(text = "1") },
@@ -136,7 +343,7 @@ private fun EditItemDialog(
                         unfocusedPlaceholderColor = Color.Gray,
                         focusedIndicatorColor = Color.Blue,
                         unfocusedIndicatorColor = Color.Gray,
-                        ),
+                    ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
@@ -147,35 +354,35 @@ private fun EditItemDialog(
 
                 Column(modifier = Modifier.fillMaxWidth(1.0f)) {
                     OutlinedTextField(
-                        value = state.chosenAmountType.text,
+                        value = state.editAmountType.text,
                         onValueChange = { },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.updateAmountMenuState(true) },
+                            .clickable { viewModel.updateEditAmountMenuState(true) },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             disabledContainerColor = Color.White,
                             disabledTextColor = Color.Black,
                             disabledTrailingIconColor = Color.Black,
                             disabledPlaceholderColor = Color.Gray,
-                            disabledIndicatorColor = if (state.amountMenuOpen) Color.Blue else Color.Gray
+                            disabledIndicatorColor = if (state.editAmountMenuOpen) Color.Blue else Color.Gray
                         ),
                         enabled = false,
                         trailingIcon = {
-                            if (state.amountMenuOpen) Icon(
+                            if (state.editAmountMenuOpen) Icon(
                                 Icons.Filled.KeyboardArrowDown,
                                 null
                             ) else Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null)
                         }
                     )
                     DropdownMenu(
-                        expanded = state.amountMenuOpen,
-                        onDismissRequest = { viewModel.updateAmountMenuState(false) }
+                        expanded = state.editAmountMenuOpen,
+                        onDismissRequest = { viewModel.updateEditAmountMenuState(false) }
                     ) {
                         Amount.entries.forEach {
                             DropdownMenuItem(
                                 text = { Text(it.text) },
-                                onClick = { viewModel.updateAmountType(it) }
+                                onClick = { viewModel.updateEditAmountType(it) }
                             )
                         }
                     }
@@ -209,7 +416,7 @@ private fun EditItemDialog(
                     unfocusedPlaceholderColor = Color.Gray,
                     focusedIndicatorColor = Color.Blue,
                     unfocusedIndicatorColor = Color.Gray,
-                    )
+                )
             )
             Button(
                 onClick = {
@@ -230,8 +437,8 @@ private fun EditItemDialog(
                 onClick = {
                     viewModel.createShoppingItem(
                         name = state.editShoppingItemText,
-                        amountType = state.chosenAmountType,
-                        number = state.amountText.toInt()
+                        amountType = state.editAmountType,
+                        number = state.editAmountText
                     )
                     viewModel.changeEditItemDialogState(null)
                 },
@@ -249,7 +456,11 @@ private fun EditItemDialog(
 }
 
 @Composable
-private fun TopBar(state: ListViewModelState, viewModel: ListViewModel, navigateBack: () -> Unit) {
+private fun TopBar(
+    state: ListViewModelState,
+    viewModel: ListViewModel,
+    navigateBack: () -> Unit
+) {
     Column {
         Row(
             modifier = Modifier
@@ -258,7 +469,7 @@ private fun TopBar(state: ListViewModelState, viewModel: ListViewModel, navigate
                 .padding(top = 50.dp, bottom = 20.dp, start = 30.dp, end = 30.dp)
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.clickable { navigateBack() }
@@ -339,5 +550,4 @@ private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewMo
             )
         }
     }
-
 }
