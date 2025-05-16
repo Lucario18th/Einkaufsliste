@@ -110,4 +110,30 @@ class ListViewModel  (
     fun updateAddAmountType(amountType: Amount) {
         listStateFlow.update { it.copy(addAmountType = amountType, addAmountMenuOpen = false) }
     }
+
+    fun updateShoppingItem(name: String, amountType: Amount, number: String) {
+        val shoppingItemToUpdate = listStateFlow.value.shoppingItemToEdit
+        if (name != "" && shoppingItemToUpdate != null) {
+            try {
+                updateShoppingItemUseCase.updateShoppingItemValues(
+                    shoppingListId.toInt(),
+                    shoppingItemToUpdate.id,
+                    name,
+                    amountType,
+                    number.toDouble()
+                )
+            } catch (_: NumberFormatException) {
+
+                updateShoppingItemUseCase.updateShoppingItemValues(
+                    shoppingListId.toInt(),
+                    shoppingItemToUpdate.id,
+                    name,
+                    amountType,
+                    1.0
+                )
+            }
+        }
+        updateShoppingList()
+        makeValuesDefault()
+    }
 }

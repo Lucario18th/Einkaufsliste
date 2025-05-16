@@ -1,8 +1,10 @@
 package com.example.einkaufsliste.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -292,6 +294,7 @@ private fun EditItemDialog(
     viewModel: ListViewModel,
     state: ListViewModelState,
 ) {
+    val focusManager = LocalFocusManager.current
     Dialog(
         onDismissRequest = {
             viewModel.changeEditItemDialogState(null)
@@ -358,7 +361,10 @@ private fun EditItemDialog(
                         onValueChange = { },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.updateEditAmountMenuState(true) },
+                            .clickable {
+                                viewModel.updateEditAmountMenuState(true)
+                                focusManager.clearFocus()
+                            },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             disabledContainerColor = Color.White,
@@ -435,10 +441,11 @@ private fun EditItemDialog(
             }
             Button(
                 onClick = {
-                    viewModel.createShoppingItem(
+                    viewModel.updateShoppingItem(
                         name = state.editShoppingItemText,
                         amountType = state.editAmountType,
                         number = state.editAmountText
+
                     )
                     viewModel.changeEditItemDialogState(null)
                 },
@@ -517,6 +524,7 @@ private fun TopBar(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewModel) {
     Box(
@@ -525,7 +533,10 @@ private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewMo
             .clip(RoundedCornerShape(20.dp))
             .background(if (shoppingItem.checked) Color.Green else Color.White)
             .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
-            .clickable { viewModel.toggleShoppingItemState(shoppingItem) }
+            .combinedClickable(
+                onClick = { viewModel.toggleShoppingItemState(shoppingItem) },
+                onLongClick = { viewModel.changeEditItemDialogState(shoppingItem) }
+            )
     ) {
         Row(
             modifier = Modifier
