@@ -3,8 +3,8 @@ package com.example.einkaufsliste.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.einkaufsliste.model.models.ShoppingList
-import com.example.einkaufsliste.model.usecase.list.CreateShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.GetRandomKeyValueUseCase
+import com.example.einkaufsliste.model.usecase.list.CreateShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.list.UpdateShoppingListNameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +40,7 @@ class ListsOverviewViewModel(): ViewModel() {
             val newShoppingList = ShoppingList(nextId, name)
             shoppingLists.add(newShoppingList)
             listOverviewStateFlow.update { it.copy(allLists = shoppingLists, addRenameListTextField = "") }
-            changeAddRenameListDialogState(false)
+            updateAddRenameListDialogState(false)
             viewModelScope.launch {
                 createShoppingList(newShoppingList)
             }
@@ -55,7 +55,7 @@ class ListsOverviewViewModel(): ViewModel() {
         listOverviewStateFlow.update { it.copy(searchFieldOpen = state) }
     }
 
-    fun changeAddRenameListDialogState(state: Boolean, shoppingListToRename: ShoppingList? = null) {
+    fun updateAddRenameListDialogState(state: Boolean, shoppingListToRename: ShoppingList? = null) {
         listOverviewStateFlow.update { it.copy(showAddListSheet = state, shoppingListToRename = shoppingListToRename, addRenameListTextField = shoppingListToRename?.name?:  "") }
     }
 
@@ -68,5 +68,13 @@ class ListsOverviewViewModel(): ViewModel() {
         if (shoppingList.name != newName) renameShoppingList(shoppingList.id, newName)
         listOverviewStateFlow.update { it.copy(addRenameListTextField = "", showAddListSheet = false) }
         loadAllLists()
+    }
+
+    fun updateListMenuDropdown(state: Boolean) {
+        listOverviewStateFlow.update { it.copy(listMenuDropdownOpen = state) }
+    }
+
+    fun updateDeleteListDialogState(shoppingList: ShoppingList?) {
+        listOverviewStateFlow.update { it.copy(shoppingListToDelete = shoppingList) }
     }
 }

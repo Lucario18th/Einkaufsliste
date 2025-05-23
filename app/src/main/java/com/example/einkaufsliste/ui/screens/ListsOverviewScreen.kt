@@ -12,15 +12,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -33,14 +38,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.einkaufsliste.NavigationDestinations
+import com.example.einkaufsliste.R
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.models.completion
 import com.example.einkaufsliste.ui.components.AddButton
@@ -57,7 +65,7 @@ fun ListsOverviewScreen(
     Scaffold(
         topBar = { TopBar(state, viewModel) },
         floatingActionButton = {
-            AddButton(onClick = { viewModel.changeAddRenameListDialogState(true) })
+            AddButton(onClick = { viewModel.updateAddRenameListDialogState(true) })
         },
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.White
@@ -66,21 +74,91 @@ fun ListsOverviewScreen(
             AddRenameListDialog(viewModel, state)
         }
 
+        if (state.shoppingListToDelete != null) {
+            DeleteListDialog(viewModel, state)
+        }
+
         LazyColumn(
             modifier = Modifier.padding(paddingValues)
         ) {
             this.items(state.allLists) { list ->
                 if (state.searchFieldOpen && list.name.contains(state.searchTextField)) {
-                    ListListItem(shoppingList = list,
-                        navigateToShoppingList = { navController.navigate(NavigationDestinations.List.name + "/$it") },
-                        openRenameDialog = { viewModel.changeAddRenameListDialogState(true, it) }
-                    )
+                    ListListItem(list, viewModel, state, navController)
                 } else if (!state.searchFieldOpen) {
-                    ListListItem(shoppingList = list,
-                        navigateToShoppingList = { navController.navigate(NavigationDestinations.List.name + "/$it") },
-                        openRenameDialog = { viewModel.changeAddRenameListDialogState(true, it) }
-                    )
+                    ListListItem(list, viewModel, state, navController)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeleteListDialog(
+    viewModel: ListsOverviewViewModel,
+    state: ListsOverviewViewModelState
+) {
+    Dialog(
+        onDismissRequest = {
+            viewModel.updateAddRenameListDialogState(false)
+            viewModel.updateAddRenameListText("")
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Blue)
+                    .padding(15.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.report_24dp_e3e3e3),
+                    null,
+                    tint = Color.White,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
+            Text(
+                text = "Willst du die Liste \"${state.shoppingListToDelete?.name?: ""}\" wirklich löschen?",
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Button(
+                onClick = { viewModel.updateDeleteListDialogState(null) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .border(2.dp, Color.Blue, RoundedCornerShape(30.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                )
+            ) {
+                Text(text = "Abbrechen", color = Color.Blue)
+            }
+            Button(
+                onClick = {
+
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(Color.Blue),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(
+                    text = "Löschen",
+                    color = Color.White
+                )
             }
         }
     }
@@ -93,7 +171,7 @@ private fun AddRenameListDialog(
 ) {
     Dialog(
         onDismissRequest = {
-            viewModel.changeAddRenameListDialogState(false)
+            viewModel.updateAddRenameListDialogState(false)
             viewModel.updateAddRenameListText("")
         }
     ) {
@@ -151,7 +229,7 @@ private fun AddRenameListDialog(
             Button(
                 onClick = {
                     viewModel.updateAddRenameListText("")
-                    viewModel.changeAddRenameListDialogState(false)
+                    viewModel.updateAddRenameListDialogState(false)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,7 +253,10 @@ private fun AddRenameListDialog(
                     .background(Color.Blue),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
             ) {
-                Text(text = if (state.shoppingListToRename == null) "Erstellen" else "Umbennenen", color = Color.White)
+                Text(
+                    text = if (state.shoppingListToRename == null) "Erstellen" else "Umbennenen",
+                    color = Color.White
+                )
             }
         }
     }
@@ -237,31 +318,63 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ListListItem(shoppingList: ShoppingList, navigateToShoppingList: (id: Int) -> Unit, openRenameDialog: (shoppingList: ShoppingList) -> Unit) {
+private fun ListListItem(
+    shoppingList: ShoppingList,
+    viewModel: ListsOverviewViewModel,
+    state: ListsOverviewViewModelState,
+    navController: NavController
+) {
     Box(
         modifier = Modifier
             .padding(vertical = 15.dp, horizontal = 20.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
-            .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
+            .fillMaxWidth()
             .combinedClickable(
-                onClick = { navigateToShoppingList(shoppingList.id) },
-                onLongClick = { openRenameDialog(shoppingList) }
-            )
+                onClick = { navController.navigate(NavigationDestinations.List.name + "/${shoppingList.id}") },
+                onLongClick = { viewModel.updateListMenuDropdown(true) }
+            ),
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+                .padding()
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
+                .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
         ) {
-            Text(text = shoppingList.name)
-            Spacer(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .padding(20.dp)
+            ) {
+                Text(text = shoppingList.name)
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+                Text(text = "${shoppingList.completion()}/${shoppingList.items.size}")
+            }
+        }
+        DropdownMenu(
+            expanded = state.listMenuDropdownOpen,
+            onDismissRequest = { viewModel.updateListMenuDropdown(false) },
+            offset = DpOffset(20.dp, 0.dp),
+        ) {
+            DropdownMenuItem(
+                text = { Text("Umbenennen") },
+                onClick = {
+                    viewModel.updateAddRenameListDialogState(true, shoppingList)
+                    viewModel.updateListMenuDropdown(false)
+                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Edit, null) }
             )
-            Text(text = "${shoppingList.completion()}/${shoppingList.items.size}")
+            DropdownMenuItem(
+                text = { Text("Löschen") },
+                onClick = {
+                    viewModel.updateDeleteListDialogState(shoppingList)
+                    viewModel.updateListMenuDropdown(false)
+                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Delete, null) }
+            )
         }
     }
-
 }
