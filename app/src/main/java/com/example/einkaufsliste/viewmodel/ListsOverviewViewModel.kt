@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.usecase.GetRandomKeyValueUseCase
 import com.example.einkaufsliste.model.usecase.list.CreateShoppingListUseCase
+import com.example.einkaufsliste.model.usecase.list.DeleteShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
 import com.example.einkaufsliste.model.usecase.list.UpdateShoppingListNameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ class ListsOverviewViewModel(): ViewModel() {
     private val getRandomKeyValue = GetRandomKeyValueUseCase()
     private val getShoppingListUseCase = GetShoppingListUseCase()
     private val renameShoppingList = UpdateShoppingListNameUseCase()
+    private val deleteShoppingListUseCase = DeleteShoppingListUseCase()
 
     private val listOverviewStateFlow = MutableStateFlow(ListsOverviewViewModelState())
     val listOverviewViewState = listOverviewStateFlow.asStateFlow()
@@ -76,5 +78,10 @@ class ListsOverviewViewModel(): ViewModel() {
 
     fun updateDeleteListDialogState(shoppingList: ShoppingList?) {
         listOverviewStateFlow.update { it.copy(shoppingListToDelete = shoppingList) }
+    }
+
+    fun deleteShoppingList(shoppingList: ShoppingList) {
+        deleteShoppingListUseCase(shoppingList.id)
+        loadAllLists()
     }
 }

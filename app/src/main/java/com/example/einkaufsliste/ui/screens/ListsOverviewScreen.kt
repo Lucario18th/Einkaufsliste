@@ -146,7 +146,10 @@ private fun DeleteListDialog(
             }
             Button(
                 onClick = {
-
+                    if (state.shoppingListToDelete != null) {
+                        viewModel.deleteShoppingList(shoppingList = state.shoppingListToDelete)
+                    }
+                    viewModel.updateDeleteListDialogState(null)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
