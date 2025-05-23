@@ -72,8 +72,8 @@ class ListsOverviewViewModel(): ViewModel() {
         loadAllLists()
     }
 
-    fun updateListMenuDropdown(state: Boolean) {
-        listOverviewStateFlow.update { it.copy(listMenuDropdownOpen = state) }
+    fun updateListMenuDropdownForId(id: Int?) {
+        listOverviewStateFlow.update { it.copy(listMenuDropdownOpenForId = id) }
     }
 
     fun updateDeleteListDialogState(shoppingList: ShoppingList?) {

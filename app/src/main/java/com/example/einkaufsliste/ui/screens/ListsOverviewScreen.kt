@@ -333,7 +333,7 @@ private fun ListListItem(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = { navController.navigate(NavigationDestinations.List.name + "/${shoppingList.id}") },
-                onLongClick = { viewModel.updateListMenuDropdown(true) }
+                onLongClick = { viewModel.updateListMenuDropdownForId(shoppingList.id) }
             ),
     ) {
         Box(
@@ -358,15 +358,15 @@ private fun ListListItem(
             }
         }
         DropdownMenu(
-            expanded = state.listMenuDropdownOpen,
-            onDismissRequest = { viewModel.updateListMenuDropdown(false) },
+            expanded = state.listMenuDropdownOpenForId == shoppingList.id,
+            onDismissRequest = { viewModel.updateListMenuDropdownForId(null) },
             offset = DpOffset(20.dp, 0.dp),
         ) {
             DropdownMenuItem(
                 text = { Text("Umbenennen") },
                 onClick = {
                     viewModel.updateAddRenameListDialogState(true, shoppingList)
-                    viewModel.updateListMenuDropdown(false)
+                    viewModel.updateListMenuDropdownForId(null)
                 },
                 leadingIcon = { Icon(imageVector = Icons.Default.Edit, null) }
             )
@@ -374,7 +374,7 @@ private fun ListListItem(
                 text = { Text("Löschen") },
                 onClick = {
                     viewModel.updateDeleteListDialogState(shoppingList)
-                    viewModel.updateListMenuDropdown(false)
+                    viewModel.updateListMenuDropdownForId(null)
                 },
                 leadingIcon = { Icon(imageVector = Icons.Default.Delete, null) }
             )

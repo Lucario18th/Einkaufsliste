@@ -12,6 +12,6 @@ data class ListsOverviewViewModelState(
     val addRenameListTextField: String = "",
     val addListTextFieldHasError: Boolean = false,
     val shoppingListToRename: ShoppingList? = null,
-    val listMenuDropdownOpen: Boolean = false,
+    val listMenuDropdownOpenForId: Int? = null,
     val shoppingListToDelete: ShoppingList? = null
 )
