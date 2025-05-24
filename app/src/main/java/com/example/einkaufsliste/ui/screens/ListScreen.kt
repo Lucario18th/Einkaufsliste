@@ -644,7 +644,7 @@ private fun DeleteListDialog(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.report_24dp_e3e3e3),
+                    painter = painterResource(R.drawable.warning_icon),
                     null,
                     tint = Color.White,
                     modifier = Modifier.size(30.dp)
