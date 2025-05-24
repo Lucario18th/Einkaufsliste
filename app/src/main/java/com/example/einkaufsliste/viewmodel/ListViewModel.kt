@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.model.usecase.item.CreateShoppingItemUseCase
+import com.example.einkaufsliste.model.usecase.item.DeleteShoppingItemUseCase
 import com.example.einkaufsliste.model.usecase.item.UpdateShoppingItemUseCase
 import com.example.einkaufsliste.model.usecase.list.GetShoppingListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ class ListViewModel  (
     private val getShoppingListUseCase: GetShoppingListUseCase = GetShoppingListUseCase()
     private val updateShoppingItemUseCase: UpdateShoppingItemUseCase = UpdateShoppingItemUseCase()
     private val createShoppingItemUseCase: CreateShoppingItemUseCase = CreateShoppingItemUseCase()
+    private val deleteShoppingItemUseCase: DeleteShoppingItemUseCase = DeleteShoppingItemUseCase()
 
     private val shoppingListId = savedStateHandle.get<String>("shoppingListId") ?: throw IllegalArgumentException("Keine Id für Shoppinglist bekommen")
     private val shoppingList = getShoppingListUseCase.getShoppingList(shoppingListId.toInt())
@@ -143,5 +145,10 @@ class ListViewModel  (
 
     fun updateDeleteItemDialogState(shoppingItemToDelete: ShoppingItem?) {
         listStateFlow.update { it.copy(shoppingItemToDelete = shoppingItemToDelete) }
+    }
+
+    fun deleteShoppingItem(id: Int) {
+        deleteShoppingItemUseCase(id)
+        updateShoppingList()
     }
 }

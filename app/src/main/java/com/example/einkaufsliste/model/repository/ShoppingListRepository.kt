@@ -85,4 +85,11 @@ class ShoppingListRepository {
             }
         }
     }
+
+    fun deleteShoppingItem(itemId: Int) {
+        realm.writeBlocking {
+            val shoppingItem = query<RealmShoppingItem>("id == $0", "$itemId").find().first()
+            delete(shoppingItem)
+        }
+    }
 }

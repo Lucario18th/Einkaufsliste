@@ -673,7 +673,7 @@ private fun DeleteListDialog(
             Button(
                 onClick = {
                     if (state.shoppingItemToDelete != null) {
-                        //viewModel.deleteShoppingList(shoppingList = state.shoppingListToDelete)
+                        viewModel.deleteShoppingItem(state.shoppingItemToDelete.id)
                     }
                     viewModel.updateDeleteItemDialogState(null)
                 },
