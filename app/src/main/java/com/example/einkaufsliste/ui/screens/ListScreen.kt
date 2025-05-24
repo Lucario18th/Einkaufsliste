@@ -25,6 +25,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Close
@@ -53,17 +55,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.einkaufsliste.NavigationDestinations
+import com.example.einkaufsliste.R
 import com.example.einkaufsliste.model.models.Amount
 import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.ui.components.SearchField
@@ -94,6 +99,9 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
+            if (state.shoppingItemToDelete != null) {
+                DeleteListDialog(viewModel, state)
+            }
             if (state.shoppingItemToEdit != null) {
                 EditItemDialog(viewModel, state)
             }
@@ -101,11 +109,11 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
                 if (state.searchFieldOpen) {
                     this.items(state.list.items) { item ->
                         if (item.name.contains(state.searchFieldText))
-                            ItemOnShoppingList(item, viewModel)
+                            ItemOnShoppingList(item, viewModel, state)
                     }
                 } else {
                     this.items(state.list.items) { item ->
-                        if (!item.checked) ItemOnShoppingList(item, viewModel)
+                        if (!item.checked) ItemOnShoppingList(item, viewModel, state)
                     }
                     this.item {
                         HorizontalDivider(
@@ -118,7 +126,7 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
                     }
                 }
                 this.items(state.list.items) { item ->
-                    if (item.checked) ItemOnShoppingList(item, viewModel)
+                    if (item.checked) ItemOnShoppingList(item, viewModel, state)
                 }
             }
         }
@@ -543,39 +551,144 @@ private fun TopBar(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ItemOnShoppingList(shoppingItem: ShoppingItem, viewModel: ListViewModel) {
+private fun ItemOnShoppingList(
+    shoppingItem: ShoppingItem,
+    viewModel: ListViewModel,
+    state: ListViewModelState
+) {
     Box(
         modifier = Modifier
             .padding(vertical = 15.dp, horizontal = 20.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(if (shoppingItem.checked) Color.LightGray else Color.White)
-            .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
+            .fillMaxWidth()
             .combinedClickable(
                 onClick = { viewModel.toggleShoppingItemState(shoppingItem) },
-                onLongClick = { viewModel.changeEditItemDialogState(shoppingItem) }
-            )
+                onLongClick = { viewModel.updateItemMenuDropdownForId(shoppingItem.id) }
+            ),
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+                .padding()
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
+                .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(20.dp))
         ) {
-            Text(
-                text = "${shoppingItem.number} ${shoppingItem.amountType.text}",
-                color = Color.Gray,
-                textDecoration = if (shoppingItem.checked) TextDecoration.LineThrough else null
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = shoppingItem.name,
-                fontWeight = FontWeight.Bold,
-                textDecoration = if (shoppingItem.checked) TextDecoration.LineThrough else null
-            )
-            Spacer(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .padding(20.dp)
+            ) {
+                Text(
+                    text = "${shoppingItem.number} ${shoppingItem.amountType.text}",
+                    color = Color.Gray,
+                    textDecoration = if (shoppingItem.checked) TextDecoration.LineThrough else null
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = shoppingItem.name,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = if (shoppingItem.checked) TextDecoration.LineThrough else null
+                )
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = state.itemMenuDropdownOpenForId == shoppingItem.id,
+            onDismissRequest = { viewModel.updateItemMenuDropdownForId(null) },
+            offset = DpOffset(20.dp, 0.dp),
+        ) {
+            DropdownMenuItem(
+                text = { Text("Bearbeiten") },
+                onClick = {
+                    viewModel.changeEditItemDialogState(shoppingItem)
+                    viewModel.updateItemMenuDropdownForId(null)
+                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Edit, null) }
             )
+            DropdownMenuItem(
+                text = { Text("Löschen") },
+                onClick = {
+                    viewModel.updateDeleteItemDialogState(shoppingItem)
+                    viewModel.updateItemMenuDropdownForId(null)
+                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Delete, null) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun DeleteListDialog(
+    viewModel: ListViewModel,
+    state: ListViewModelState
+) {
+    Dialog(
+        onDismissRequest = { viewModel.updateDeleteItemDialogState(null) }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Blue)
+                    .padding(15.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.report_24dp_e3e3e3),
+                    null,
+                    tint = Color.White,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
+            Text(
+                text = "Willst du den Eintrag \"${state.shoppingItemToDelete?.name?: ""}\" wirklich löschen?",
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Button(
+                onClick = { viewModel.updateDeleteItemDialogState(null) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .border(2.dp, Color.Blue, RoundedCornerShape(30.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                )
+            ) {
+                Text(text = "Abbrechen", color = Color.Blue)
+            }
+            Button(
+                onClick = {
+                    if (state.shoppingItemToDelete != null) {
+                        //viewModel.deleteShoppingList(shoppingList = state.shoppingListToDelete)
+                    }
+                    viewModel.updateDeleteItemDialogState(null)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(Color.Blue),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(
+                    text = "Löschen",
+                    color = Color.White
+                )
+            }
         }
     }
 }

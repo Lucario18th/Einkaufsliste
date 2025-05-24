@@ -98,10 +98,7 @@ private fun DeleteListDialog(
     state: ListsOverviewViewModelState
 ) {
     Dialog(
-        onDismissRequest = {
-            viewModel.updateAddRenameListDialogState(false)
-            viewModel.updateAddRenameListText("")
-        }
+        onDismissRequest = { viewModel.updateDeleteListDialogState(null) }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

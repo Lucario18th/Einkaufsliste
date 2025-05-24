@@ -17,4 +17,6 @@ data class ListViewModelState(
     val addAmountText: String = "",
     val addAmountMenuOpen: Boolean = false,
     val addAmountType: Amount = Amount.TIMES,
+    val itemMenuDropdownOpenForId: Int? = null,
+    val shoppingItemToDelete: ShoppingItem? = null
 )

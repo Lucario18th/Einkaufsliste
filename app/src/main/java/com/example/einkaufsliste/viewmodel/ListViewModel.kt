@@ -136,4 +136,12 @@ class ListViewModel  (
         updateShoppingList()
         makeValuesDefault()
     }
+
+    fun updateItemMenuDropdownForId(id: Int?) {
+        listStateFlow.update { it.copy(itemMenuDropdownOpenForId = id) }
+    }
+
+    fun updateDeleteItemDialogState(shoppingItemToDelete: ShoppingItem?) {
+        listStateFlow.update { it.copy(shoppingItemToDelete = shoppingItemToDelete) }
+    }
 }
