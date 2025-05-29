@@ -55,6 +55,7 @@ import com.example.einkaufsliste.ui.components.AddButton
 import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModel
 import com.example.einkaufsliste.viewmodel.ListsOverviewViewModelState
+import java.util.Locale
 
 @Composable
 fun ListsOverviewScreen(
@@ -82,7 +83,7 @@ fun ListsOverviewScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             this.items(state.allLists) { list ->
-                if (state.searchFieldOpen && list.name.contains(state.searchTextField)) {
+                if (state.searchFieldOpen && list.name.lowercase(Locale.getDefault()).contains(state.searchTextField.lowercase(Locale.getDefault()))) {
                     ListListItem(list, viewModel, state, navController)
                 } else if (!state.searchFieldOpen) {
                     ListListItem(list, viewModel, state, navController)

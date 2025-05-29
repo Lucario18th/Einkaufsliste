@@ -75,6 +75,7 @@ import com.example.einkaufsliste.ui.components.SearchField
 import com.example.einkaufsliste.viewmodel.ListViewModel
 import com.example.einkaufsliste.viewmodel.ListViewModelState
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +109,7 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
             LazyColumn {
                 if (state.searchFieldOpen) {
                     this.items(state.list.items) { item ->
-                        if (item.name.contains(state.searchFieldText))
+                        if (item.name.lowercase(Locale.getDefault()).contains(state.searchFieldText.lowercase(Locale.getDefault())))
                             ItemOnShoppingList(item, viewModel, state)
                     }
                 } else {
