@@ -115,14 +115,16 @@ fun ListScreen(navController: NavController, viewModel: ListViewModel = viewMode
                     this.items(state.list.items) { item ->
                         if (!item.checked) ItemOnShoppingList(item, viewModel, state)
                     }
-                    this.item {
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp),
-                            thickness = 2.dp,
-                            color = Color.DarkGray
-                        )
+                    if (state.list.items.isNotEmpty()) {
+                        this.item {
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                thickness = 2.dp,
+                                color = Color.DarkGray
+                            )
+                        }
                     }
                 }
                 this.items(state.list.items) { item ->
