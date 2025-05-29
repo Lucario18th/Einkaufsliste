@@ -11,9 +11,9 @@ android {
     defaultConfig {
         applicationId = "com.example.einkaufsliste"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
-        versionName = "0.1"
+        versionName = "0.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -63,10 +63,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation("io.realm.kotlin:library-base:1.16.0")
-    implementation("io.realm.kotlin:library-sync:1.16.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation(libs.library.base)
+    implementation(libs.library.sync)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
