@@ -1,6 +1,5 @@
 package com.example.einkaufsliste.ui.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.einkaufsliste.NavigationDestinations
 import com.example.einkaufsliste.R
+import com.example.einkaufsliste.model.models.ShoppingItem
 import com.example.einkaufsliste.model.models.ShoppingList
 import com.example.einkaufsliste.model.models.completion
 import com.example.einkaufsliste.ui.components.AddButton
@@ -83,10 +84,33 @@ fun ListsOverviewScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             this.items(state.allLists) { list ->
-                if (state.searchFieldOpen && list.name.lowercase(Locale.getDefault()).contains(state.searchTextField.lowercase(Locale.getDefault()))) {
+                if (state.searchTextField != "" &&
+                    state.searchFieldOpen &&
+                    list.name.lowercase(Locale.getDefault()).contains(state.searchTextField.lowercase(Locale.getDefault()))
+                ) {
                     ListListItem(list, viewModel, state, navController)
                 } else if (!state.searchFieldOpen) {
                     ListListItem(list, viewModel, state, navController)
+                }
+            }
+            if (state.searchFieldOpen && state.searchTextField != "") {
+                this.item {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 20.dp),
+                        thickness = 2.dp,
+                        color = Color.DarkGray
+                    )
+                }
+                this.items(state.allLists) { list ->
+                    list.items.forEach { item ->
+                        if (item.name.lowercase(Locale.getDefault())
+                                .contains(state.searchTextField.lowercase(Locale.getDefault()))
+                        ) {
+                            ListListItem(list, viewModel, state, navController, item)
+                        }
+                    }
                 }
             }
         }
@@ -124,7 +148,7 @@ private fun DeleteListDialog(
             }
 
             Text(
-                text = "Willst du die Liste \"${state.shoppingListToDelete?.name?: ""}\" wirklich löschen?",
+                text = "Willst du die Liste \"${state.shoppingListToDelete?.name ?: ""}\" wirklich löschen?",
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -317,13 +341,13 @@ private fun TopBar(state: ListsOverviewViewModelState, viewModel: ListsOverviewV
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ListListItem(
     shoppingList: ShoppingList,
     viewModel: ListsOverviewViewModel,
     state: ListsOverviewViewModelState,
-    navController: NavController
+    navController: NavController,
+    shoppingItem: ShoppingItem? = null,
 ) {
     Box(
         modifier = Modifier
@@ -331,7 +355,11 @@ private fun ListListItem(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = { navController.navigate(NavigationDestinations.List.name + "/${shoppingList.id}") },
-                onLongClick = { viewModel.updateListMenuDropdownForId(shoppingList.id) }
+                onLongClick = {
+                    if (shoppingItem == null) {
+                        viewModel.updateListMenuDropdownForId(shoppingList.id)
+                    }
+                }
             ),
     ) {
         Box(
@@ -346,13 +374,15 @@ private fun ListListItem(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                Text(text = shoppingList.name)
+                Text(text = if (shoppingItem == null) shoppingList.name else "${shoppingItem.name} aus ${shoppingList.name}")
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
                 )
-                Text(text = "${shoppingList.completion()}/${shoppingList.items.size}")
+                if (shoppingItem == null) {
+                    Text(text = "${shoppingList.completion()}/${shoppingList.items.size}")
+                }
             }
         }
         DropdownMenu(
