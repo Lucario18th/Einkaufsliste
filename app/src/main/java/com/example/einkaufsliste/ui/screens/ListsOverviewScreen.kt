@@ -70,7 +70,7 @@ fun ListsOverviewScreen(
             AddButton(onClick = { viewModel.updateAddRenameListDialogState(true) })
         },
         modifier = Modifier.fillMaxSize(),
-        containerColor = Color.White
+        containerColor = Color.White,
     ) { paddingValues ->
         if (state.showAddListSheet) {
             AddRenameListDialog(viewModel, state)
