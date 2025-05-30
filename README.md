@@ -4,7 +4,7 @@
 
 ## Installation
 
-Still in a stage where it cannot be used
+Release v0.1.1 is here
 
 ## Usage
 
